@@ -14,6 +14,29 @@ const int SCREEN_HEIGHT = 480;
 
 typedef enum {FALSE = 0 , TRUE = 1} bool;
 
+// Function prototypes
+
+// Starts up SDL and creates window
+bool init(void);
+
+// Loads media
+bool load_media(void);
+
+// Frees media and shuts down SDL
+void close_sdl(void);
+
+// Global variables
+
+// The window we'll be rendering to
+SDL_Window* gWindow = NULL;
+
+// The surface contained by the window
+SDL_Surface* gScreenSurface = NULL;
+
+// The image we will load and show on the screen
+SDL_Surface* gHelloWorld = NULL;
+
+
 
 int main(int argc, char* argv[]) {
     

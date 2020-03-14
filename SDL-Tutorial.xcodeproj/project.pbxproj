@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		ABE162A72419811000D61E72 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = ABE162A62419811000D61E72 /* main.c */; };
+		ABED5E55241D345E00E3AE7A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = ABED5E54241D345E00E3AE7A /* main.c */; };
+		ABED5E58241D348E00E3AE7A /* graphic.c in Sources */ = {isa = PBXBuildFile; fileRef = ABED5E57241D348E00E3AE7A /* graphic.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,7 +25,9 @@
 
 /* Begin PBXFileReference section */
 		ABE162A32419811000D61E72 /* fourier-drawing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "fourier-drawing"; sourceTree = BUILT_PRODUCTS_DIR; };
-		ABE162A62419811000D61E72 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		ABED5E54241D345E00E3AE7A /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		ABED5E56241D348E00E3AE7A /* graphic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graphic.h; sourceTree = "<group>"; };
+		ABED5E57241D348E00E3AE7A /* graphic.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = graphic.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +60,9 @@
 		ABE162A52419811000D61E72 /* fourier-drawing */ = {
 			isa = PBXGroup;
 			children = (
-				ABE162A62419811000D61E72 /* main.c */,
+				ABED5E56241D348E00E3AE7A /* graphic.h */,
+				ABED5E57241D348E00E3AE7A /* graphic.c */,
+				ABED5E54241D345E00E3AE7A /* main.c */,
 			);
 			path = "fourier-drawing";
 			sourceTree = "<group>";
@@ -119,7 +124,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ABE162A72419811000D61E72 /* main.c in Sources */,
+				ABED5E58241D348E00E3AE7A /* graphic.c in Sources */,
+				ABED5E55241D345E00E3AE7A /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -180,6 +186,14 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				"OTHER_CFLAGS[arch=*]" = (
+					"-I/usr/local/include/SDL2",
+					"-D_THREAD_SAFE",
+				);
+				"OTHER_LDFLAGS[arch=*]" = (
+					"-L/usr/local/lib",
+					"-lSDL2",
+				);
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -239,6 +253,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				GCC_NO_COMMON_BLOCKS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -247,6 +262,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				GCC_NO_COMMON_BLOCKS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

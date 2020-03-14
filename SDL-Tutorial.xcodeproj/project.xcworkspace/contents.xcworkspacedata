@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:fourier-drawing.xcodeproj">
+      location = "self:/Users/jva/Documents/projects/fourier-drawing/fourier-drawing.xcodeproj">
    </FileRef>
 </Workspace>
