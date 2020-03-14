@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "ABE162A22419811000D61E72"
-               BuildableName = "fourier-drawing"
-               BlueprintName = "fourier-drawing"
-               ReferencedContainer = "container:fourier-drawing.xcodeproj">
+               BuildableName = "SDL-Tutorial"
+               BlueprintName = "SDL-Tutorial"
+               ReferencedContainer = "container:SDL-Tutorial.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,8 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
-      useCustomWorkingDirectory = "NO"
+      useCustomWorkingDirectory = "YES"
+      customWorkingDirectory = "/Users/jva/Documents/projects/SDL-Tutorial/SDL-Tutorial"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -45,9 +46,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "ABE162A22419811000D61E72"
-            BuildableName = "fourier-drawing"
-            BlueprintName = "fourier-drawing"
-            ReferencedContainer = "container:fourier-drawing.xcodeproj">
+            BuildableName = "SDL-Tutorial"
+            BlueprintName = "SDL-Tutorial"
+            ReferencedContainer = "container:SDL-Tutorial.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +63,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "ABE162A22419811000D61E72"
-            BuildableName = "fourier-drawing"
-            BlueprintName = "fourier-drawing"
-            ReferencedContainer = "container:fourier-drawing.xcodeproj">
+            BuildableName = "SDL-Tutorial"
+            BlueprintName = "SDL-Tutorial"
+            ReferencedContainer = "container:SDL-Tutorial.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

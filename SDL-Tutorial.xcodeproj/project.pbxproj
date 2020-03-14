@@ -24,7 +24,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		ABE162A32419811000D61E72 /* fourier-drawing */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "fourier-drawing"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ABC707FE241D7A99007B36C4 /* hello_world.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = hello_world.bmp; path = ../../../../Downloads/02_getting_an_image_on_the_screen/hello_world.bmp; sourceTree = "<group>"; };
+		ABC707FF241D7E1F007B36C4 /* hello_world.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = hello_world.bmp; sourceTree = "<group>"; };
+		ABE162A32419811000D61E72 /* SDL-Tutorial */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "SDL-Tutorial"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABED5E54241D345E00E3AE7A /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		ABED5E56241D348E00E3AE7A /* graphic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graphic.h; sourceTree = "<group>"; };
 		ABED5E57241D348E00E3AE7A /* graphic.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = graphic.c; sourceTree = "<group>"; };
@@ -44,7 +46,7 @@
 		ABE1629A2419811000D61E72 = {
 			isa = PBXGroup;
 			children = (
-				ABE162A52419811000D61E72 /* fourier-drawing */,
+				ABE162A52419811000D61E72 /* SDL-Tutorial */,
 				ABE162A42419811000D61E72 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -52,27 +54,29 @@
 		ABE162A42419811000D61E72 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				ABE162A32419811000D61E72 /* fourier-drawing */,
+				ABE162A32419811000D61E72 /* SDL-Tutorial */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		ABE162A52419811000D61E72 /* fourier-drawing */ = {
+		ABE162A52419811000D61E72 /* SDL-Tutorial */ = {
 			isa = PBXGroup;
 			children = (
 				ABED5E56241D348E00E3AE7A /* graphic.h */,
+				ABC707FF241D7E1F007B36C4 /* hello_world.bmp */,
 				ABED5E57241D348E00E3AE7A /* graphic.c */,
+				ABC707FE241D7A99007B36C4 /* hello_world.bmp */,
 				ABED5E54241D345E00E3AE7A /* main.c */,
 			);
-			path = "fourier-drawing";
+			path = "SDL-Tutorial";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		ABE162A22419811000D61E72 /* fourier-drawing */ = {
+		ABE162A22419811000D61E72 /* SDL-Tutorial */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = ABE162AA2419811000D61E72 /* Build configuration list for PBXNativeTarget "fourier-drawing" */;
+			buildConfigurationList = ABE162AA2419811000D61E72 /* Build configuration list for PBXNativeTarget "SDL-Tutorial" */;
 			buildPhases = (
 				ABE1629F2419811000D61E72 /* Sources */,
 				ABE162A02419811000D61E72 /* Frameworks */,
@@ -82,9 +86,9 @@
 			);
 			dependencies = (
 			);
-			name = "fourier-drawing";
+			name = "SDL-Tutorial";
 			productName = "fourier-drawing";
-			productReference = ABE162A32419811000D61E72 /* fourier-drawing */;
+			productReference = ABE162A32419811000D61E72 /* SDL-Tutorial */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -101,7 +105,7 @@
 					};
 				};
 			};
-			buildConfigurationList = ABE1629E2419811000D61E72 /* Build configuration list for PBXProject "fourier-drawing" */;
+			buildConfigurationList = ABE1629E2419811000D61E72 /* Build configuration list for PBXProject "SDL-Tutorial" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -114,7 +118,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				ABE162A22419811000D61E72 /* fourier-drawing */,
+				ABE162A22419811000D61E72 /* SDL-Tutorial */,
 			);
 		};
 /* End PBXProject section */
@@ -270,7 +274,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		ABE1629E2419811000D61E72 /* Build configuration list for PBXProject "fourier-drawing" */ = {
+		ABE1629E2419811000D61E72 /* Build configuration list for PBXProject "SDL-Tutorial" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ABE162A82419811000D61E72 /* Debug */,
@@ -279,7 +283,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		ABE162AA2419811000D61E72 /* Build configuration list for PBXNativeTarget "fourier-drawing" */ = {
+		ABE162AA2419811000D61E72 /* Build configuration list for PBXNativeTarget "SDL-Tutorial" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ABE162AB2419811000D61E72 /* Debug */,
