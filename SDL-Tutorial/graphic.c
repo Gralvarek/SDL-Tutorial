@@ -13,7 +13,7 @@ const int SCREEN_HEIGHT = 480;
 
 extern SDL_Window* gWindow;
 extern SDL_Surface* gScreenSurface;
-extern SDL_Surface* gHelloWorld;
+extern SDL_Surface* gXOut;
 
 
 bool init() {
@@ -46,8 +46,8 @@ bool load_media() {
     bool success = TRUE;
     
     // Load splash image
-    gHelloWorld = SDL_LoadBMP("hello_world.bmp");
-    if(gHelloWorld == NULL) {
+    gXOut = SDL_LoadBMP("x.bmp");
+    if(gXOut == NULL) {
         printf("Unable to load image %s! SDL_Error: %s\n", "hello_world.bmp", SDL_GetError());
         success = FALSE;
     }
@@ -58,8 +58,8 @@ bool load_media() {
 void close_sdl() {
     
     // Deallocate surface
-    SDL_FreeSurface(gHelloWorld);
-    gHelloWorld = NULL;
+    SDL_FreeSurface(gXOut);
+    gXOut = NULL;
     
     // Destroy window
     SDL_DestroyWindow(gWindow);

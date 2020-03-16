@@ -21,12 +21,13 @@ SDL_Window* gWindow = NULL;
 SDL_Surface* gScreenSurface = NULL;
 
 // The image we will load and show on the screen
-SDL_Surface* gHelloWorld = NULL;
+SDL_Surface* gXOut = NULL;
 
 
 
 int main(int argc, char* argv[]) {
     
+  
     if(!init()) {
         printf("Failed to initialize!\n");
     } else {
@@ -34,21 +35,24 @@ int main(int argc, char* argv[]) {
         if(!load_media()) {
             printf("Failed to load media!\n");
         } else {
-            // Apply the image
-            SDL_BlitSurface(gHelloWorld, NULL, gScreenSurface, NULL);
-            
-            // Update the surface
-            SDL_UpdateWindowSurface(gWindow);
-            
             // Exit button closes window
-            bool is_running = TRUE;
+            bool quit = FALSE;
             SDL_Event event;
-            while (is_running) {
+            while (!quit) {
                 while (SDL_PollEvent(&event)) {
                     if (event.type == SDL_QUIT) {
-                        is_running = FALSE;
+                        quit = TRUE;
                     }
                 }
+                
+                
+                // Apply the image
+                SDL_BlitSurface(gXOut, NULL, gScreenSurface, NULL);
+                
+                // Update the surface
+                SDL_UpdateWindowSurface(gWindow);
+                
+                // Sleeps the CPU
                 SDL_Delay(16);
             }
         }
