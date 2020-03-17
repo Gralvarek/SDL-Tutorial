@@ -191,13 +191,25 @@ bool load_media() {
 }
 
 SDL_Surface* load_surface(char* path) {
+    
+    // optimized image to return
+    SDL_Surface* optimized_surface = NULL;
         
     // Loads image from specific string
     SDL_Surface* loaded_surface = SDL_LoadBMP(path);
     if (loaded_surface == NULL) {
         printf("Unable to load image %s! SDL_Error: %s\n", path, SDL_GetError());
+    } else {
+        // Convert surface to screen format
+        optimized_surface = SDL_ConvertSurface(loaded_surface, gScreenSurface->format, 0);
+        if (optimized_surface == NULL) {
+            printf("Unable to optimize image %s! SDL_Error: %s\n", path, SDL_GetError());
+        }
+        
+        // Free old loaded surface
+        SDL_FreeSurface(loaded_surface);
     }
-    return loaded_surface;
+    return optimized_surface;
 }
 
 void close_sdl() {
