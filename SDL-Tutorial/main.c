@@ -25,6 +25,9 @@ bool init_window(void);
 bool load_media(void);
 
 // Loads specific surface from path string
+SDL_Surface* load_surface(char*);
+
+// Loads specific texture from path string
 SDL_Texture* load_texture(char*);
 
 // Frees media and shuts down SDL
@@ -35,10 +38,10 @@ void close_sdl(void);
 // The window we'll be rendering to
 SDL_Window* gWindow = NULL;
 
-// The surface contained by the window
+// The window renderer
 SDL_Renderer* gRenderer = NULL;
 
-// Current displayed PNG image
+// Current displayed texture
 SDL_Texture* gTexture = NULL;
 
 
@@ -136,7 +139,7 @@ bool load_media() {
     // Loading success flag
     bool success = TRUE;
     
-    // Load default image
+    // Load PNG texture
     gTexture = load_texture("texture.png");
     if (gTexture == NULL) {
         printf("Unable to load PNG image!\n");
@@ -148,7 +151,7 @@ bool load_media() {
 
 SDL_Texture* load_texture(char* path) {
     
-    // optimized image to return
+    // The final texture
     SDL_Texture* new_texture = NULL;
         
     // Loads image from specific string
@@ -167,6 +170,28 @@ SDL_Texture* load_texture(char* path) {
     }
     return new_texture;
 }
+
+/*SDL_Surface* load_surface(char* path) {
+    
+    // optimized image to return
+    SDL_Surface* optimized_surface = NULL;
+        
+    // Loads image from specific string
+    SDL_Surface* loaded_surface = IMG_Load(path);
+    if (loaded_surface == NULL) {
+        printf("Unable to load image %s! SDL_Error: %s\n", path, IMG_GetError());
+    } else {
+        // Convert surface to screen format
+        optimized_surface = SDL_ConvertSurface(loaded_surface, gScreenSurface->format, 0);
+        if (optimized_surface == NULL) {
+            printf("Unable to optimize image %s! SDL_Error: %s\n", path, SDL_GetError());
+        }
+        
+        // Free old loaded surface
+        SDL_FreeSurface(loaded_surface);
+    }
+    return optimized_surface;
+}*/
 
 void close_sdl() {
     
