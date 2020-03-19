@@ -41,9 +41,8 @@ SDL_Window* gWindow = NULL;
 // The window renderer
 SDL_Renderer* gRenderer = NULL;
 
-// Scene sprites
-SDL_Rect gSpriteClips[4];
-Texture* gSpriteSheetTexture = NULL;
+// Texture to be modulated
+Texture* gModulatedTexture = NULL;
 
 
 
@@ -63,16 +62,49 @@ int main(int argc, char* argv[]) {
             
             // Event handler
             SDL_Event event;
+            
+            // Modulation components
+            Uint8 r = 255;
+            Uint8 g = 255;
+            Uint8 b = 255;
                                     
             // Application loop
             while (!quit) {
                 
                 // Handle event in queue
-                while (SDL_PollEvent(&event)) {
+                while (SDL_PollEvent(&event) != 0) {
                     
                     if (event.type == SDL_QUIT) {
                         // User requests quit
                         quit = TRUE;
+                        
+                    } else if (event.type == SDL_KEYDOWN) {
+                        // On keypress change rgb values
+                        switch (event.key.keysym.sym) {
+                            case SDLK_q:
+                                r += 32;
+                                break;
+                                
+                            case SDLK_w:
+                                g += 32;
+                                break;
+                            
+                            case SDLK_e:
+                                b += 32;
+                                break;
+                            
+                            case SDLK_a:
+                                r -= 32;
+                                break;
+                            
+                            case SDLK_s:
+                                g -= 32;
+                                break;
+                            
+                            case SDLK_d:
+                                b -= 32;
+                                break;
+                        }
                     }
                     
                 }
@@ -81,17 +113,9 @@ int main(int argc, char* argv[]) {
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
                 SDL_RenderClear(gRenderer);
                 
-                // Render top left sprite
-                Texture_Render(gSpriteSheetTexture, 0, 0, &gSpriteClips[0]);
-                
-                // Render top right sprite
-                Texture_Render(gSpriteSheetTexture, SCREEN_WIDTH - gSpriteClips[1].w, 0, &gSpriteClips[1]);
-                
-                // Render bottom left sprite
-                Texture_Render(gSpriteSheetTexture, 0, SCREEN_HEIGHT - gSpriteClips[2].h, &gSpriteClips[2]);
-                
-                // Render bottom right sprite
-                Texture_Render(gSpriteSheetTexture, SCREEN_WIDTH - gSpriteClips[3].w, SCREEN_HEIGHT - gSpriteClips[3].h, &gSpriteClips[3]);
+                // Modulate and render texture
+                Texture_SetColor(gModulatedTexture, r, g, b);
+                Texture_Render(gModulatedTexture, 0, 0, NULL);
                 
                 // Update the surface
                 SDL_RenderPresent(gRenderer);
@@ -152,34 +176,10 @@ bool LoadMedia() {
     bool success = TRUE;
     
     // Load Foo texture
-    gSpriteSheetTexture = Texture_New();
-    if (Texture_LoadFromFile(gSpriteSheetTexture, "dots.png") == FALSE) {
+    gModulatedTexture = Texture_New();
+    if (Texture_LoadFromFile(gModulatedTexture, "colors.png") == FALSE) {
         printf("Failed to load Foo texture image!\n");
         success = FALSE;
-    } else {
-        // Set up top left sprite
-        gSpriteClips[0].x = 0;
-        gSpriteClips[0].y = 0;
-        gSpriteClips[0].w = 100;
-        gSpriteClips[0].h = 100;
-        
-        // Set up top right sprite
-        gSpriteClips[1].x = 100;
-        gSpriteClips[1].y = 0;
-        gSpriteClips[1].w = 100;
-        gSpriteClips[1].h = 100;
-        
-        // Set up bottom left sprite
-        gSpriteClips[2].x = 0;
-        gSpriteClips[2].y = 100;
-        gSpriteClips[2].w = 100;
-        gSpriteClips[2].h = 100;
-        
-        // Set up bottom right sprite
-        gSpriteClips[3].x = 100;
-        gSpriteClips[3].y = 100;
-        gSpriteClips[3].w = 100;
-        gSpriteClips[3].h = 100;
     }
     
     return success;
@@ -188,8 +188,8 @@ bool LoadMedia() {
 void CloseSDL() {
     
     // Free loaded images
-    Texture_Destroy(gSpriteSheetTexture);
-    gSpriteSheetTexture = NULL;
+    Texture_Destroy(gModulatedTexture);
+    gModulatedTexture = NULL;
     
     // Destroy window
     SDL_DestroyRenderer(gRenderer);

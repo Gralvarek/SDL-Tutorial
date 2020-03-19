@@ -74,6 +74,11 @@ bool Texture_LoadFromFile(Texture* self, const char* path) {
     return self->texture != NULL;
 }
 
+void Texture_SetColor(Texture* self, Uint8 red, Uint8 green, Uint8 blue) {
+    // Modulate texture
+    SDL_SetTextureColorMod(self->texture, red, green, blue);
+}
+
 void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip) {
     // Set rendering space and render to screen
     SDL_Rect render_quad = {x, y, self->width, self->height};
