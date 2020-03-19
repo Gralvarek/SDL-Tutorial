@@ -41,9 +41,11 @@ SDL_Window* gWindow = NULL;
 // The window renderer
 SDL_Renderer* gRenderer = NULL;
 
-// Texture to be modulated
+// Front texture to be modulated
 Texture* gModulatedTexture = NULL;
 
+// Background texture
+Texture* gBackgroundTexture = NULL;
 
 
 int main(int argc, char* argv[]) {
@@ -64,9 +66,7 @@ int main(int argc, char* argv[]) {
             SDL_Event event;
             
             // Modulation components
-            Uint8 r = 255;
-            Uint8 g = 255;
-            Uint8 b = 255;
+            Uint8 a = 255;
                                     
             // Application loop
             while (!quit) {
@@ -81,28 +81,20 @@ int main(int argc, char* argv[]) {
                     } else if (event.type == SDL_KEYDOWN) {
                         // On keypress change rgb values
                         switch (event.key.keysym.sym) {
-                            case SDLK_q:
-                                r += 32;
+                            case SDLK_a:
+                                if (a + 32 > 255) {
+                                    a = 255;
+                                } else {
+                                    a += 32;
+                                }
                                 break;
                                 
-                            case SDLK_w:
-                                g += 32;
-                                break;
-                            
-                            case SDLK_e:
-                                b += 32;
-                                break;
-                            
-                            case SDLK_a:
-                                r -= 32;
-                                break;
-                            
-                            case SDLK_s:
-                                g -= 32;
-                                break;
-                            
-                            case SDLK_d:
-                                b -= 32;
+                            case SDLK_o:
+                                if (a - 32 < 0) {
+                                    a = 0;
+                                } else {
+                                    a -= 32;
+                                }
                                 break;
                         }
                     }
@@ -113,8 +105,11 @@ int main(int argc, char* argv[]) {
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
                 SDL_RenderClear(gRenderer);
                 
+                // Render background texture
+                Texture_Render(gBackgroundTexture, 0, 0, NULL);
+                
                 // Modulate and render texture
-                Texture_SetColor(gModulatedTexture, r, g, b);
+                Texture_SetAlpha(gModulatedTexture, a);
                 Texture_Render(gModulatedTexture, 0, 0, NULL);
                 
                 // Update the surface
@@ -175,10 +170,20 @@ bool LoadMedia() {
     // Loading success flag
     bool success = TRUE;
     
-    // Load Foo texture
+    // Load front alpha texture
     gModulatedTexture = Texture_New();
-    if (Texture_LoadFromFile(gModulatedTexture, "colors.png") == FALSE) {
-        printf("Failed to load Foo texture image!\n");
+    if (Texture_LoadFromFile(gModulatedTexture, "fadeout.png") == FALSE) {
+        printf("Failed to load front texture image!\n");
+        success = FALSE;
+    } else {
+        // Set standard alpha blending
+        Texture_SetBlendMode(gModulatedTexture, SDL_BLENDMODE_BLEND);
+    }
+    
+    // Load background texture
+    gBackgroundTexture = Texture_New();
+    if (Texture_LoadFromFile(gBackgroundTexture, "fadein.png") == FALSE) {
+        printf("Failed to load background texture image!\n");
         success = FALSE;
     }
     

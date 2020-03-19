@@ -79,6 +79,14 @@ void Texture_SetColor(Texture* self, Uint8 red, Uint8 green, Uint8 blue) {
     SDL_SetTextureColorMod(self->texture, red, green, blue);
 }
 
+void Texture_SetBlendMode(Texture* self, SDL_BlendMode blending) {
+    SDL_SetTextureBlendMode(self->texture, blending);
+}
+
+void Texture_SetAlpha(Texture* self, Uint8 alpha) {
+    SDL_SetTextureAlphaMod(self->texture, alpha);
+}
+
 void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip) {
     // Set rendering space and render to screen
     SDL_Rect render_quad = {x, y, self->width, self->height};

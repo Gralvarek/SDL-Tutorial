@@ -37,6 +37,12 @@ bool Texture_LoadFromFile(Texture* self, const char* path);
 // Set color modulation
 void Texture_SetColor(Texture* self, Uint8 red, Uint8 green, Uint8 blue);
 
+// Set blending
+void Texture_SetBlendMode(Texture* self, SDL_BlendMode blending);
+
+// Set alpha modulation
+void Texture_SetAlpha(Texture* self, Uint8 alpha);
+
 // Renders texture at given point
 void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip);
 
