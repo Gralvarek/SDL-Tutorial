@@ -42,7 +42,7 @@ SDL_Window* gWindow = NULL;
 SDL_Renderer* gRenderer = NULL;
 
 // Current displayed texture
-//SDL_Texture* gTexture = NULL;
+SDL_Texture* gTexture = NULL;
 
 
 int main(int argc, char* argv[]) {
@@ -75,32 +75,41 @@ int main(int argc, char* argv[]) {
                     
                 }
                 
-                // Clear screen
-                SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                // Clear the screen
                 SDL_RenderClear(gRenderer);
                 
-                // Render red filled quad
-                SDL_Rect fill_rect = {SCREEN_WIDTH/4, SCREEN_HEIGHT/4, SCREEN_WIDTH/2, SCREEN_HEIGHT/2};
-                SDL_SetRenderDrawColor(gRenderer, 0xFF, 0x00, 0x00, 0xFF);
-                SDL_RenderFillRect(gRenderer, &fill_rect);
-                
-                // Render green outlined quad
-                SDL_Rect outline_rect = {SCREEN_WIDTH/6, SCREEN_HEIGHT/6, SCREEN_WIDTH*2/3, SCREEN_HEIGHT*2/3};
-                SDL_SetRenderDrawColor(gRenderer, 0x00, 0xFF, 0x00, 0xFF);
-                SDL_RenderDrawRect(gRenderer, &outline_rect);
-
-                // Draw blue horizontal line
-                SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0xFF, 0xFF);
-                SDL_RenderDrawLine(gRenderer, 0, SCREEN_HEIGHT/2, SCREEN_WIDTH, SCREEN_HEIGHT/2);
-                
-                // Draw vertical line of yellow dots
-                SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0x00, 0xFF);
-                for (int i = 0; i < SCREEN_HEIGHT; i += 4) {
-                    SDL_RenderDrawPoint(gRenderer, SCREEN_WIDTH/2, i);
-                }
+                // Top left corner viewport
+                SDL_Rect top_left_viewport;
+                top_left_viewport.x = 0;
+                top_left_viewport.y = 0;
+                top_left_viewport.w = SCREEN_WIDTH/2;
+                top_left_viewport.h = SCREEN_HEIGHT/2;
+                SDL_RenderSetViewport(gRenderer, &top_left_viewport);
                 
                 // Render texture to screen
-                //SDL_RenderCopy(gRenderer, gTexture, NULL, NULL);
+                SDL_RenderCopy(gRenderer, gTexture, NULL, NULL);
+                
+                // Top right corner viewport
+                SDL_Rect top_right_viewport;
+                top_right_viewport.x = SCREEN_WIDTH/2;
+                top_right_viewport.y = 0;
+                top_right_viewport.w = SCREEN_WIDTH/2;
+                top_right_viewport.h = SCREEN_HEIGHT/2;
+                SDL_RenderSetViewport(gRenderer, &top_right_viewport);
+                
+                // Render texture to screen
+                SDL_RenderCopy(gRenderer, gTexture, NULL, NULL);
+                
+                // Bottom viewport
+                SDL_Rect bottom_viewport;
+                bottom_viewport.x = 0;
+                bottom_viewport.y = SCREEN_HEIGHT/2;
+                bottom_viewport.w = SCREEN_WIDTH;
+                bottom_viewport.h = SCREEN_HEIGHT/2;
+                SDL_RenderSetViewport(gRenderer, &bottom_viewport);
+                
+                // Render texture to screen
+                SDL_RenderCopy(gRenderer, gTexture, NULL, NULL);
                 
                 // Update the surface
                 SDL_RenderPresent(gRenderer);
@@ -161,13 +170,13 @@ bool load_media() {
     bool success = TRUE;
     
     // Load PNG texture
-    /*
-    gTexture = load_texture("texture.png");
+    
+    gTexture = load_texture("viewport.png");
     if (gTexture == NULL) {
         printf("Unable to load PNG image!\n");
         success = FALSE;
     }
-    */
+    
     return success;
 }
 
