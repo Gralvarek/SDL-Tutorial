@@ -41,11 +41,12 @@ SDL_Window* gWindow = NULL;
 // The window renderer
 SDL_Renderer* gRenderer = NULL;
 
-// Front texture to be modulated
-Texture* gModulatedTexture = NULL;
 
-// Background texture
-Texture* gBackgroundTexture = NULL;
+
+// Walking animation
+const int WALKING_ANIMATION_FRAMES = 4;
+SDL_Rect gSpriteClips[WALKING_ANIMATION_FRAMES];
+Texture* gSpriteSheetTexture;
 
 
 int main(int argc, char* argv[]) {
@@ -65,55 +66,39 @@ int main(int argc, char* argv[]) {
             // Event handler
             SDL_Event event;
             
-            // Modulation components
-            Uint8 a = 255;
+            // Current animation frame
+            int frame = 0;
                                     
             // Application loop
             while (!quit) {
                 
                 // Handle event in queue
                 while (SDL_PollEvent(&event) != 0) {
-                    
                     if (event.type == SDL_QUIT) {
                         // User requests quit
                         quit = TRUE;
                         
-                    } else if (event.type == SDL_KEYDOWN) {
-                        // On keypress change rgb values
-                        switch (event.key.keysym.sym) {
-                            case SDLK_a:
-                                if (a + 32 > 255) {
-                                    a = 255;
-                                } else {
-                                    a += 32;
-                                }
-                                break;
-                                
-                            case SDLK_o:
-                                if (a - 32 < 0) {
-                                    a = 0;
-                                } else {
-                                    a -= 32;
-                                }
-                                break;
-                        }
                     }
-                    
                 }
                 
                 // Clear the screen
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
                 SDL_RenderClear(gRenderer);
                 
-                // Render background texture
-                Texture_Render(gBackgroundTexture, 0, 0, NULL);
-                
-                // Modulate and render texture
-                Texture_SetAlpha(gModulatedTexture, a);
-                Texture_Render(gModulatedTexture, 0, 0, NULL);
+                // Render current frame
+                SDL_Rect* current_clip = &gSpriteClips[frame/4];
+                Texture_Render(gSpriteSheetTexture, (SCREEN_WIDTH - current_clip->w)/2, (SCREEN_HEIGHT - current_clip->h)/2, current_clip);
                 
                 // Update the surface
                 SDL_RenderPresent(gRenderer);
+                
+                // Go to next frame
+                ++frame;
+                
+                // Cycle animation
+                if (frame/4 >= WALKING_ANIMATION_FRAMES) {
+                    frame = 0;
+                }
                 
                 // Sleeps the window
                 SDL_Delay(10);
@@ -144,7 +129,7 @@ bool InitWindow() {
             success = FALSE;
         } else {
             // Create renderer for window
-            gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+            gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
             if (gRenderer == NULL) {
                 printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
                 success = FALSE;
@@ -171,20 +156,31 @@ bool LoadMedia() {
     bool success = TRUE;
     
     // Load front alpha texture
-    gModulatedTexture = Texture_New();
-    if (Texture_LoadFromFile(gModulatedTexture, "fadeout.png") == FALSE) {
-        printf("Failed to load front texture image!\n");
+    gSpriteSheetTexture = Texture_New();
+    if (Texture_LoadFromFile(gSpriteSheetTexture, "foo.png") == FALSE) {
+        printf("Failed to load walking animation texture!\n");
         success = FALSE;
     } else {
-        // Set standard alpha blending
-        Texture_SetBlendMode(gModulatedTexture, SDL_BLENDMODE_BLEND);
-    }
-    
-    // Load background texture
-    gBackgroundTexture = Texture_New();
-    if (Texture_LoadFromFile(gBackgroundTexture, "fadein.png") == FALSE) {
-        printf("Failed to load background texture image!\n");
-        success = FALSE;
+        // Set sprite clips
+        gSpriteClips[0].x = 0;
+        gSpriteClips[0].y = 0;
+        gSpriteClips[0].w = 64;
+        gSpriteClips[0].h = 205;
+        
+        gSpriteClips[1].x = 64;
+        gSpriteClips[1].y = 0;
+        gSpriteClips[1].w = 64;
+        gSpriteClips[1].h = 205;
+        
+        gSpriteClips[2].x = 128;
+        gSpriteClips[2].y = 0;
+        gSpriteClips[2].w = 64;
+        gSpriteClips[2].h = 205;
+        
+        gSpriteClips[3].x = 196;
+        gSpriteClips[3].y = 0;
+        gSpriteClips[3].w = 64;
+        gSpriteClips[3].h = 205;
     }
     
     return success;
@@ -193,8 +189,8 @@ bool LoadMedia() {
 void CloseSDL() {
     
     // Free loaded images
-    Texture_Destroy(gModulatedTexture);
-    gModulatedTexture = NULL;
+    Texture_Destroy(gSpriteSheetTexture);
+    gSpriteSheetTexture = NULL;
     
     // Destroy window
     SDL_DestroyRenderer(gRenderer);
