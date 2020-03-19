@@ -35,7 +35,7 @@ void Texture_FreeMembers(Texture* self);
 bool Texture_LoadFromFile(Texture* self, const char* path);
 
 // Renders texture at given point
-void Texture_Render(Texture* self, int x, int y);
+void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip);
 
 // Gets image dimensions
 int Texture_GetWidth(Texture* self);

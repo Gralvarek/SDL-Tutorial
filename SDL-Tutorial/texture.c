@@ -74,10 +74,17 @@ bool Texture_LoadFromFile(Texture* self, const char* path) {
     return self->texture != NULL;
 }
 
-void Texture_Render(Texture* self, int x, int y) {
+void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip) {
     // Set rendering space and render to screen
     SDL_Rect render_quad = {x, y, self->width, self->height};
-    SDL_RenderCopy(gRenderer, self->texture, NULL, &render_quad);
+    
+    // Set clip rendering dimensions
+    if (clip != NULL) {
+        render_quad.w = clip->w;
+        render_quad.h = clip->h;
+    }
+    
+    SDL_RenderCopy(gRenderer, self->texture, clip, &render_quad);
 }
 
 int Texture_GetWidth(Texture* self) {
