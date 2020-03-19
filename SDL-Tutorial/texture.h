@@ -34,6 +34,9 @@ void Texture_FreeMembers(Texture* self);
 // Loads image at specific path
 bool Texture_LoadFromFile(Texture* self, const char* path);
 
+// Set color modulation
+void Texture_SetColor(Texture* self, Uint8 red, Uint8 green, Uint8 blue);
+
 // Renders texture at given point
 void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip);
 
