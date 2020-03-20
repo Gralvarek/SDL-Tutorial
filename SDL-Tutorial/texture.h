@@ -29,7 +29,7 @@ void Texture_Init(Texture* self);
 // Deallocator + destructor
 void Texture_Destroy(Texture* self);
 // Deallocates memory of member variables
-void Texture_FreeMembers(Texture* self);
+void Texture_DeleteMembers(Texture* self);
 
 // Loads image at specific path
 bool Texture_LoadFromFile(Texture* self, const char* path);
@@ -44,7 +44,7 @@ void Texture_SetBlendMode(Texture* self, SDL_BlendMode blending);
 void Texture_SetAlpha(Texture* self, Uint8 alpha);
 
 // Renders texture at given point
-void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip);
+void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip);
 
 // Gets image dimensions
 int Texture_GetWidth(Texture* self);

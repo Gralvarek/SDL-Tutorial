@@ -25,12 +25,12 @@ void Texture_Init(Texture* self) {
 
 void Texture_Destroy(Texture* self) {
     if (self != NULL) {
-        Texture_FreeMembers(self);
+        Texture_DeleteMembers(self);
         free(self);
     }
 }
 
-void Texture_FreeMembers(Texture* self) {
+void Texture_DeleteMembers(Texture* self) {
     if (self->texture != NULL) {
         SDL_DestroyTexture(self->texture);
         self->texture = NULL;
@@ -42,7 +42,7 @@ void Texture_FreeMembers(Texture* self) {
 bool Texture_LoadFromFile(Texture* self, const char* path) {
     
     // Get rid of preexisting texture
-    Texture_FreeMembers(self);
+    Texture_DeleteMembers(self);
     
     // The final texture
     SDL_Texture* new_texture = NULL;
@@ -87,7 +87,7 @@ void Texture_SetAlpha(Texture* self, Uint8 alpha) {
     SDL_SetTextureAlphaMod(self->texture, alpha);
 }
 
-void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip) {
+void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip) {
     // Set rendering space and render to screen
     SDL_Rect render_quad = {x, y, self->width, self->height};
     
@@ -97,7 +97,7 @@ void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip) {
         render_quad.h = clip->h;
     }
     
-    SDL_RenderCopy(gRenderer, self->texture, clip, &render_quad);
+    SDL_RenderCopyEx(gRenderer, self->texture, clip, &render_quad, angle, center, flip);
 }
 
 int Texture_GetWidth(Texture* self) {

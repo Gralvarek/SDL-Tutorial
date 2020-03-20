@@ -41,12 +41,8 @@ SDL_Window* gWindow = NULL;
 // The window renderer
 SDL_Renderer* gRenderer = NULL;
 
-
-
 // Walking animation
-const int WALKING_ANIMATION_FRAMES = 4;
-SDL_Rect gSpriteClips[WALKING_ANIMATION_FRAMES];
-Texture* gSpriteSheetTexture;
+Texture* gArrowTexture;
 
 
 int main(int argc, char* argv[]) {
@@ -66,8 +62,11 @@ int main(int argc, char* argv[]) {
             // Event handler
             SDL_Event event;
             
-            // Current animation frame
-            int frame = 0;
+            // Angle of rotation
+            double degrees = 0;
+            
+            // Flip type
+            SDL_RendererFlip flip_type = SDL_FLIP_NONE;
                                     
             // Application loop
             while (!quit) {
@@ -78,6 +77,28 @@ int main(int argc, char* argv[]) {
                         // User requests quit
                         quit = TRUE;
                         
+                    } else if (event.type == SDL_KEYDOWN) {
+                        switch (event.key.keysym.sym) {
+                            case SDLK_a:
+                                degrees -= 60;
+                                break;
+                            
+                            case SDLK_o:
+                                degrees += 60;
+                                break;
+                                
+                            case SDLK_h:
+                                flip_type = SDL_FLIP_HORIZONTAL;
+                                break;
+                                
+                            case SDLK_t:
+                                flip_type = SDL_FLIP_NONE;
+                                break;
+                                
+                            case SDLK_n:
+                                flip_type = SDL_FLIP_VERTICAL;
+                                break;
+                        }
                     }
                 }
                 
@@ -86,19 +107,10 @@ int main(int argc, char* argv[]) {
                 SDL_RenderClear(gRenderer);
                 
                 // Render current frame
-                SDL_Rect* current_clip = &gSpriteClips[frame/4];
-                Texture_Render(gSpriteSheetTexture, (SCREEN_WIDTH - current_clip->w)/2, (SCREEN_HEIGHT - current_clip->h)/2, current_clip);
+                Texture_Render(gArrowTexture, (SCREEN_WIDTH - Texture_GetWidth(gArrowTexture))/2, (SCREEN_HEIGHT - Texture_GetHeight(gArrowTexture))/2, NULL, degrees, NULL, flip_type);
                 
                 // Update the surface
                 SDL_RenderPresent(gRenderer);
-                
-                // Go to next frame
-                ++frame;
-                
-                // Cycle animation
-                if (frame/4 >= WALKING_ANIMATION_FRAMES) {
-                    frame = 0;
-                }
                 
                 // Sleeps the window
                 SDL_Delay(10);
@@ -156,31 +168,10 @@ bool LoadMedia() {
     bool success = TRUE;
     
     // Load front alpha texture
-    gSpriteSheetTexture = Texture_New();
-    if (Texture_LoadFromFile(gSpriteSheetTexture, "foo.png") == FALSE) {
-        printf("Failed to load walking animation texture!\n");
+    gArrowTexture = Texture_New();
+    if (Texture_LoadFromFile(gArrowTexture, "arrow.png") == FALSE) {
+        printf("Failed to load arrow texture!\n");
         success = FALSE;
-    } else {
-        // Set sprite clips
-        gSpriteClips[0].x = 0;
-        gSpriteClips[0].y = 0;
-        gSpriteClips[0].w = 64;
-        gSpriteClips[0].h = 205;
-        
-        gSpriteClips[1].x = 64;
-        gSpriteClips[1].y = 0;
-        gSpriteClips[1].w = 64;
-        gSpriteClips[1].h = 205;
-        
-        gSpriteClips[2].x = 128;
-        gSpriteClips[2].y = 0;
-        gSpriteClips[2].w = 64;
-        gSpriteClips[2].h = 205;
-        
-        gSpriteClips[3].x = 196;
-        gSpriteClips[3].y = 0;
-        gSpriteClips[3].w = 64;
-        gSpriteClips[3].h = 205;
     }
     
     return success;
@@ -189,8 +180,8 @@ bool LoadMedia() {
 void CloseSDL() {
     
     // Free loaded images
-    Texture_Destroy(gSpriteSheetTexture);
-    gSpriteSheetTexture = NULL;
+    Texture_Destroy(gArrowTexture);
+    gArrowTexture = NULL;
     
     // Destroy window
     SDL_DestroyRenderer(gRenderer);
