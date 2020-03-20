@@ -9,6 +9,7 @@
 #include "texture.h"
 
 extern SDL_Renderer* gRenderer;
+extern TTF_Font* gFont;
 
 
 Texture* Texture_New() {
@@ -52,6 +53,7 @@ bool Texture_LoadFromFile(Texture* self, const char* path) {
     if (loaded_surface == NULL) {
         printf("Unable to load image %s! SDL_image Error: %s\n", path, IMG_GetError());
     } else {
+        
         // Color key image
         SDL_SetColorKey(loaded_surface, SDL_TRUE, SDL_MapRGB(loaded_surface->format, 0x00, 0xFF, 0xFF));
         
@@ -60,6 +62,7 @@ bool Texture_LoadFromFile(Texture* self, const char* path) {
         if (new_texture == NULL) {
             printf("Unable to create texture from %s! SDL Error: %s\n", path, SDL_GetError());
         } else {
+            
             // Get image dimensions
             self->width = loaded_surface->w;
             self->height = loaded_surface->h;
@@ -71,6 +74,35 @@ bool Texture_LoadFromFile(Texture* self, const char* path) {
     
     // Return success
     self->texture = new_texture;
+    return self->texture != NULL;
+}
+
+bool Texture_LoadFromRenderedText(Texture* self, const char* texture_text, SDL_Color text_color) {
+    
+    // Get rid of preexisting texture
+    Texture_DeleteMembers(self);
+    
+    // Render text surface
+    SDL_Surface* text_surface = TTF_RenderText_Solid(gFont, texture_text, text_color);
+    if (text_surface == NULL) {
+        printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+    } else {
+        
+        // Create texture from surface pixels
+        self->texture = SDL_CreateTextureFromSurface(gRenderer, text_surface);
+        if (self->texture == NULL) {
+            printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+        } else {
+            
+            // Get image dimensions
+            self->width = text_surface->w;
+            self->height = text_surface->h;
+        }
+        
+        // Get rid of old surface
+        SDL_FreeSurface(text_surface);
+    }
+    
     return self->texture != NULL;
 }
 
@@ -88,6 +120,7 @@ void Texture_SetAlpha(Texture* self, Uint8 alpha) {
 }
 
 void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip) {
+    
     // Set rendering space and render to screen
     SDL_Rect render_quad = {x, y, self->width, self->height};
     

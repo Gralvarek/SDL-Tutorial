@@ -12,36 +12,40 @@
 #include <stdio.h>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include "bool.h"
 
 
 typedef struct _Texture {
-    SDL_Texture* texture;
-    int width;
-    int height;
+    SDL_Texture* texture; // The actual hardware texture
+    int width; // Image width
+    int height; // Image height
 } Texture;
 
-// Allocator + Constructor
+// Allocator
 Texture* Texture_New(void);
-// Allocates and Initializes member variables
+// Initializes member variables (Constructor)
 void Texture_Init(Texture* self);
 
-// Deallocator + destructor
+// Deallocator
 void Texture_Destroy(Texture* self);
-// Deallocates memory of member variables
+// Deinitializes member variables (Destructor), also deallocates SDL_Texture
 void Texture_DeleteMembers(Texture* self);
+
 
 // Loads image at specific path
 bool Texture_LoadFromFile(Texture* self, const char* path);
+// Creates image from font string
+bool Texture_LoadFromRenderedText(Texture* self, const char* texture_text, SDL_Color text_color);
+
 
 // Set color modulation
 void Texture_SetColor(Texture* self, Uint8 red, Uint8 green, Uint8 blue);
-
 // Set blending
 void Texture_SetBlendMode(Texture* self, SDL_BlendMode blending);
-
 // Set alpha modulation
 void Texture_SetAlpha(Texture* self, Uint8 alpha);
+
 
 // Renders texture at given point
 void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip);

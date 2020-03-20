@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <SDL.h>
 #include <SDL_image.h>
-#include <string.h>
+#include <SDL_ttf.h>
 #include "bool.h"
 #include "texture.h"
 
@@ -41,8 +41,11 @@ SDL_Window* gWindow = NULL;
 // The window renderer
 SDL_Renderer* gRenderer = NULL;
 
+// Globally used font
+TTF_Font* gFont = NULL;
+
 // Walking animation
-Texture* gArrowTexture;
+Texture* gTextTexture = NULL;
 
 
 int main(int argc, char* argv[]) {
@@ -61,12 +64,6 @@ int main(int argc, char* argv[]) {
             
             // Event handler
             SDL_Event event;
-            
-            // Angle of rotation
-            double degrees = 0;
-            
-            // Flip type
-            SDL_RendererFlip flip_type = SDL_FLIP_NONE;
                                     
             // Application loop
             while (!quit) {
@@ -77,28 +74,6 @@ int main(int argc, char* argv[]) {
                         // User requests quit
                         quit = TRUE;
                         
-                    } else if (event.type == SDL_KEYDOWN) {
-                        switch (event.key.keysym.sym) {
-                            case SDLK_a:
-                                degrees -= 60;
-                                break;
-                            
-                            case SDLK_o:
-                                degrees += 60;
-                                break;
-                                
-                            case SDLK_h:
-                                flip_type = SDL_FLIP_HORIZONTAL;
-                                break;
-                                
-                            case SDLK_t:
-                                flip_type = SDL_FLIP_NONE;
-                                break;
-                                
-                            case SDLK_n:
-                                flip_type = SDL_FLIP_VERTICAL;
-                                break;
-                        }
                     }
                 }
                 
@@ -107,7 +82,7 @@ int main(int argc, char* argv[]) {
                 SDL_RenderClear(gRenderer);
                 
                 // Render current frame
-                Texture_Render(gArrowTexture, (SCREEN_WIDTH - Texture_GetWidth(gArrowTexture))/2, (SCREEN_HEIGHT - Texture_GetHeight(gArrowTexture))/2, NULL, degrees, NULL, flip_type);
+                Texture_Render(gTextTexture, (SCREEN_WIDTH - Texture_GetWidth(gTextTexture))/2, (SCREEN_HEIGHT - Texture_GetHeight(gTextTexture))/2, NULL, 0.0, NULL, SDL_FLIP_NONE);
                 
                 // Update the surface
                 SDL_RenderPresent(gRenderer);
@@ -134,18 +109,21 @@ bool InitWindow() {
         printf("SDL could not be initialize! SDL_Error: %s\n", SDL_GetError());
         success = FALSE;
     } else {
+        
         // Create window
         gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
         if (gWindow == NULL) {
             printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
             success = FALSE;
         } else {
+            
             // Create renderer for window
             gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
             if (gRenderer == NULL) {
                 printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
                 success = FALSE;
             } else {
+                
                 // Initialize renderer color
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
                 
@@ -153,6 +131,12 @@ bool InitWindow() {
                 int imgFlags = IMG_INIT_PNG;
                 if (!(IMG_Init(imgFlags) & imgFlags)) {
                     printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+                    success = FALSE;
+                }
+                
+                // Initialize SDL_ttf
+                if (TTF_Init() == -1) {
+                    printf("SDL_ttf could not initialize! SDL_ttf Error: %s\n", TTF_GetError());
                     success = FALSE;
                 }
             }
@@ -167,21 +151,33 @@ bool LoadMedia() {
     // Loading success flag
     bool success = TRUE;
     
-    // Load front alpha texture
-    gArrowTexture = Texture_New();
-    if (Texture_LoadFromFile(gArrowTexture, "arrow.png") == FALSE) {
-        printf("Failed to load arrow texture!\n");
+    // Open the font
+    gFont = TTF_OpenFont("lazy.ttf", 28);
+    if (gFont == NULL) {
+        printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
         success = FALSE;
+    } else {
+        
+        // Render text
+        SDL_Color text_color = {0, 0, 0};
+        gTextTexture = Texture_New();
+        if (!Texture_LoadFromRenderedText(gTextTexture, "The quick brown fox jumps over the lazy dog", text_color)) {
+            printf("Failed to render text texture!\n");
+            success = FALSE;
+        }
     }
-    
     return success;
 }
 
 void CloseSDL() {
     
     // Free loaded images
-    Texture_Destroy(gArrowTexture);
-    gArrowTexture = NULL;
+    Texture_Destroy(gTextTexture);
+    gTextTexture = NULL;
+    
+    // Free global font
+    TTF_CloseFont(gFont);
+    gFont = NULL;
     
     // Destroy window
     SDL_DestroyRenderer(gRenderer);
@@ -190,6 +186,7 @@ void CloseSDL() {
     gWindow = NULL;
     
     // Quit SDL subsystems
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
 }
