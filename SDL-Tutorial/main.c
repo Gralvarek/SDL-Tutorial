@@ -32,73 +32,74 @@ typedef enum _ButtonSprite {
 
 // Texture class
 
+// Hide this when adapting to multi file program
 typedef struct _Texture {
-    SDL_Texture* texture; // The actual hardware texture
+    SDL_Texture *texture; // The actual hardware texture
     int width; // Image width
     int height; // Image height
 } Texture;
 
 // Allocator
-Texture* Texture_New(void);
+Texture *Texture_New(void);
 // Initializes member variables (Constructor), allocates SDL_Texture
-void Texture_Init(Texture* self);
+void Texture_Init(Texture *self);
 
 // Deallocator
-void Texture_Destroy(Texture* self);
+void Texture_Destroy(Texture *self);
 // Deinitializes member variables (Destructor), deallocates SDL_Texture
-void Texture_DeleteMembers(Texture* self);
+void Texture_DeleteMembers(Texture *self);
 
 
 // Loads image at specific path
-bool Texture_LoadFromFile(Texture* self, const char* path);
+bool Texture_LoadFromFile(Texture *self, const char* path);
 #if defined(_SDL_TTF_H) || defined(SDL_TTF_H)
 // Creates image from font string
-bool Texture_LoadFromRenderedText(Texture* self, const char* texture_text, SDL_Color text_color);
+bool Texture_LoadFromRenderedText(Texture *self, const char* texture_text, SDL_Color text_color);
 #endif
 
 // Set color modulation
-void Texture_SetColor(Texture* self, Uint8 red, Uint8 green, Uint8 blue);
+void Texture_SetColor(Texture *self, Uint8 red, Uint8 green, Uint8 blue);
 // Set blending
-void Texture_SetBlendMode(Texture* self, SDL_BlendMode blending);
+void Texture_SetBlendMode(Texture *self, SDL_BlendMode blending);
 // Set alpha modulation
-void Texture_SetAlpha(Texture* self, Uint8 alpha);
+void Texture_SetAlpha(Texture *self, Uint8 alpha);
 
 
 // Renders texture at given point
-void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip);
+void Texture_Render(Texture *self, int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip);
 
 // Gets image dimensions
-int Texture_GetWidth(Texture* self);
-int Texture_GetHeight(Texture* self);
+int Texture_GetWidth(Texture *self);
+int Texture_GetHeight(Texture *self);
 
 
 
 // Button class
 
-
+// Hide this when adapting to multi file program
 typedef struct _Button {
     SDL_Point postion; // Top left position
     ButtonSprite current_sprite; // Currently used global sprite
 } Button;
 
 // Allocator
-Button* Button_New(void);
+Button *Button_New(void);
 // Initializes member variables (Constructor)
-void Button_Init(Button* self);
+void Button_Init(Button *self);
 
 // Deallocator
-void Button_Destroy(Button* self);
+void Button_Destroy(Button *self);
 // Deinitializes member variables (Destructor)
-void Button_DeleteMembers(Button* self);
+void Button_DeleteMembers(Button *self);
 
 // Sets top left position
-void Button_SetPosition(Button* self, int x, int y);
+void Button_SetPosition(Button *self, int x, int y);
 
 // Handles mouse event
-void Button_HandleEvent(Button* self, SDL_Event* event);
+void Button_HandleEvent(Button *self, SDL_Event* event);
 
 // Show button sprite
-void Button_Render(Button* self);
+void Button_Render(Button *self);
 
 
 // Function prototypes
@@ -113,43 +114,43 @@ void CloseSDL(void);
 // Global variables
 
 // The window we'll be rendering to
-SDL_Window* gWindow = NULL;
+SDL_Window *gWindow = NULL;
 
 // The window renderer
-SDL_Renderer* gRenderer = NULL;
+SDL_Renderer *gRenderer = NULL;
 
 // Mouse button sprites
 SDL_Rect gSpriteClips[BUTTON_SPRITE_TOTAL];
-Texture* gButtonSpriteSheetTexture = NULL;
+Texture *gButtonSpriteSheetTexture = NULL;
 
 // Button objects
-Button* gButtons[TOTAL_BUTTONS] = {NULL};
+Button *gButtons[TOTAL_BUTTONS] = {NULL};
 
 
 
 // Texture function definitions
 
 
-Texture* Texture_New() {
-    Texture* self = (Texture*) malloc(sizeof(Texture));
+Texture *Texture_New() {
+    Texture *self = (Texture *) malloc(sizeof(Texture));
     Texture_Init(self);
     return self;
 }
 
-void Texture_Init(Texture* self) {
+void Texture_Init(Texture *self) {
     self->texture = NULL;
     self->width = 0;
     self->height = 0;
 }
 
-void Texture_Destroy(Texture* self) {
+void Texture_Destroy(Texture *self) {
     if (self != NULL) {
         Texture_DeleteMembers(self);
         free(self);
     }
 }
 
-void Texture_DeleteMembers(Texture* self) {
+void Texture_DeleteMembers(Texture *self) {
     if (self->texture != NULL) {
         SDL_DestroyTexture(self->texture);
         self->texture = NULL;
@@ -158,16 +159,16 @@ void Texture_DeleteMembers(Texture* self) {
     }
 }
     
-bool Texture_LoadFromFile(Texture* self, const char* path) {
+bool Texture_LoadFromFile(Texture *self, const char *path) {
     
     // Get rid of preexisting texture
     Texture_DeleteMembers(self);
     
     // The final texture
-    SDL_Texture* new_texture = NULL;
+    SDL_Texture * new_texture = NULL;
     
     // Load image at specific path
-    SDL_Surface* loaded_surface = IMG_Load(path);
+    SDL_Surface * loaded_surface = IMG_Load(path);
     if (loaded_surface == NULL) {
         printf("Unable to load image %s! SDL_image Error: %s\n", path, IMG_GetError());
     } else {
@@ -196,13 +197,13 @@ bool Texture_LoadFromFile(Texture* self, const char* path) {
 }
 
 #if defined(_SDL_TTF_H) || defined(SDL_TTF_H)
-bool Texture_LoadFromRenderedText(Texture* self, const char* texture_text, SDL_Color text_color) {
+bool Texture_LoadFromRenderedText(Texture *self, const char *texture_text, SDL_Color text_color) {
     
     // Get rid of preexisting texture
     Texture_DeleteMembers(self);
     
     // Render text surface
-    SDL_Surface* text_surface = TTF_RenderText_Solid(gFont, texture_text, text_color);
+    SDL_Surface * text_surface = TTF_RenderText_Solid(gFont, texture_text, text_color);
     if (text_surface == NULL) {
         printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
     } else {
@@ -226,20 +227,20 @@ bool Texture_LoadFromRenderedText(Texture* self, const char* texture_text, SDL_C
 }
 #endif
 
-void Texture_SetColor(Texture* self, Uint8 red, Uint8 green, Uint8 blue) {
+void Texture_SetColor(Texture *self, Uint8 red, Uint8 green, Uint8 blue) {
     // Modulate texture
     SDL_SetTextureColorMod(self->texture, red, green, blue);
 }
 
-void Texture_SetBlendMode(Texture* self, SDL_BlendMode blending) {
+void Texture_SetBlendMode(Texture *self, SDL_BlendMode blending) {
     SDL_SetTextureBlendMode(self->texture, blending);
 }
 
-void Texture_SetAlpha(Texture* self, Uint8 alpha) {
+void Texture_SetAlpha(Texture *self, Uint8 alpha) {
     SDL_SetTextureAlphaMod(self->texture, alpha);
 }
 
-void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip) {
+void Texture_Render(Texture *self, int x, int y, SDL_Rect *clip, double angle, SDL_Point *center, SDL_RendererFlip flip) {
     
     // Set rendering space and render to screen
     SDL_Rect render_quad = {x, y, self->width, self->height};
@@ -253,11 +254,11 @@ void Texture_Render(Texture* self, int x, int y, SDL_Rect* clip, double angle, S
     SDL_RenderCopyEx(gRenderer, self->texture, clip, &render_quad, angle, center, flip);
 }
 
-int Texture_GetWidth(Texture* self) {
+int Texture_GetWidth(Texture *self) {
     return self->width;
 }
 
-int Texture_GetHeight(Texture* self) {
+int Texture_GetHeight(Texture *self) {
     return self->height;
 }
     
@@ -267,37 +268,37 @@ int Texture_GetHeight(Texture* self) {
 // Button function definitions
 
 
-Button* Button_New() {
-    Button* self = (Button*) malloc(sizeof(Button));
+Button *Button_New() {
+    Button *self = (Button*) malloc(sizeof(Button));
     Button_Init(self);
     return self;
 }
 
-void Button_Init(Button* self) {
+void Button_Init(Button *self) {
     self->postion.x = 0;
     self->postion.y = 0;
     self->current_sprite = BUTTON_SPRITE_MOUSE_OUT;
 }
 
-void Button_Destroy(Button* self) {
+void Button_Destroy(Button *self) {
     if (self != NULL) {
         Button_DeleteMembers(self);
         free(self);
     }
 }
 
-void Button_DeleteMembers(Button* self) {
+void Button_DeleteMembers(Button *self) {
     self->postion.x = 0;
     self->postion.y = 0;
     self->current_sprite = BUTTON_SPRITE_MOUSE_OUT;
 }
 
-void Button_SetPostion(Button* self, int x, int y) {
+void Button_SetPostion(Button *self, int x, int y) {
     self->postion.x = x;
     self->postion.y = y;
 }
 
-void Button_HandleEvent(Button* self, SDL_Event* event) {
+void Button_HandleEvent(Button *self, SDL_Event *event) {
     
     // If mouse event happened
     if (event->type == SDL_MOUSEMOTION || event->type == SDL_MOUSEBUTTONDOWN || event->type == SDL_MOUSEBUTTONUP) {
@@ -349,7 +350,7 @@ void Button_HandleEvent(Button* self, SDL_Event* event) {
     }
 }
 
-void Button_Render(Button* self) {
+void Button_Render(Button *self) {
     // Show current button sprite
     Texture_Render(gButtonSpriteSheetTexture, self->postion.x, self->postion.y, &gSpriteClips[self->current_sprite], 0.0, NULL, SDL_FLIP_NONE);
 }
@@ -357,66 +358,6 @@ void Button_Render(Button* self) {
 
 
 
-
-
-
-int main(int argc, char* argv[]) {
-    
-    if (!InitWindow()) {
-        printf("Failed to initialize!\n");
-    } else {
-        
-        // Load media
-        if (!LoadMedia()) {
-            printf("Failed to load media!\n");
-        } else {
-            
-            // Exit button closes window
-            bool quit = FALSE;
-            
-            // Event handler
-            SDL_Event event;
-                                    
-            // Application loop
-            while (!quit) {
-                
-                // Handle event in queue
-                while (SDL_PollEvent(&event) != 0) {
-                    if (event.type == SDL_QUIT) {
-                        // User requests quit
-                        quit = TRUE;
-                        
-                    }
-                    
-                    // Handle button events
-                    for (int i = 0; i < TOTAL_BUTTONS; ++i) {
-                        Button_HandleEvent(gButtons[i], &event);
-                    }
-                }
-                
-                // Clear the screen
-                SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-                SDL_RenderClear(gRenderer);
-                
-                // Render buttons
-                for (int i = 0; i < TOTAL_BUTTONS; ++i) {
-                    Button_Render(gButtons[i]);
-                }
-                
-                // Update the surface
-                SDL_RenderPresent(gRenderer);
-                
-                // Sleeps the window
-                SDL_Delay(10);
-            }
-        }
-    }
-    
-    // Free resources and close SDL
-    CloseSDL();
-    
-    return 0;
-}
 
 bool InitWindow() {
     
@@ -500,6 +441,7 @@ void CloseSDL() {
     Texture_Destroy(gButtonSpriteSheetTexture);
     gButtonSpriteSheetTexture = NULL;
     
+    // Deallocate buttons
     for (int i = 0; i < TOTAL_BUTTONS; ++i) {
         Button_Destroy(gButtons[i]);
         gButtons[i] = NULL;
@@ -517,5 +459,65 @@ void CloseSDL() {
 }
 
 
+
+
+
+int main(int argc, char* argv[]) {
+    
+    if (!InitWindow()) {
+        printf("Failed to initialize!\n");
+    } else {
+        
+        // Load media
+        if (!LoadMedia()) {
+            printf("Failed to load media!\n");
+        } else {
+            
+            // Exit button closes window
+            bool quit = FALSE;
+            
+            // Event handler
+            SDL_Event event;
+                                    
+            // Application loop
+            while (!quit) {
+                
+                // Handle event in queue
+                while (SDL_PollEvent(&event) != 0) {
+                    if (event.type == SDL_QUIT) {
+                        // User requests quit
+                        quit = TRUE;
+                        
+                    }
+                    
+                    // Handle button events
+                    for (int i = 0; i < TOTAL_BUTTONS; ++i) {
+                        Button_HandleEvent(gButtons[i], &event);
+                    }
+                }
+                
+                // Clear the screen
+                SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+                SDL_RenderClear(gRenderer);
+                
+                // Render buttons
+                for (int i = 0; i < TOTAL_BUTTONS; ++i) {
+                    Button_Render(gButtons[i]);
+                }
+                
+                // Update the surface
+                SDL_RenderPresent(gRenderer);
+                
+                // Sleeps the window
+                SDL_Delay(10);
+            }
+        }
+    }
+    
+    // Free resources and close SDL
+    CloseSDL();
+    
+    return 0;
+}
 
 
