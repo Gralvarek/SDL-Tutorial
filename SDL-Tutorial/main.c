@@ -150,11 +150,8 @@ SDL_Window *gWindow = NULL;
 // The window renderer
 SDL_Renderer *gRenderer = NULL;
 
-// Prompt texture
-Texture *gPromptTextTexture = NULL;
-
 // Time text texture
-Texture *gTimeTextTexture = NULL;
+Texture *gFPSTextTexture = NULL;
 
 // Global font
 TTF_Font* gFont = NULL;
@@ -561,19 +558,7 @@ bool LoadMedia() {
     if (gFont == NULL) {
         printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
         success = FALSE;
-    } else {
-        
-        // Set text color to black
-        SDL_Color text_color = {0, 0, 0, 255};
-        
-        // Load prompt texture
-        gPromptTextTexture = Texture_New();
-        if (!Texture_LoadFromRenderedText(gPromptTextTexture, "Press Enter to Reset Start Time.", text_color)) {
-            printf("Unable to render prompt texture!\n");
-            success = FALSE;
-        }
     }
-    
     
     return success;
 }
@@ -581,11 +566,8 @@ bool LoadMedia() {
 void CloseSDL() {
     
     // Free loaded images
-    Texture_Destroy(gPromptTextTexture);
-    gPromptTextTexture = NULL;
-    
-    Texture_Destroy(gTimeTextTexture);
-    gTimeTextTexture = NULL;
+    Texture_Destroy(gFPSTextTexture);
+    gFPSTextTexture = NULL;
     
     TTF_CloseFont(gFont);
     gFont = NULL;
@@ -639,6 +621,9 @@ int main(int argc, char* argv[]) {
             int size_of_buffer = 50;
             char buffer[size_of_buffer];
             
+            int counted_frames = 0;
+            Timer_Start(timer);
+            
             // Application loop
             while (!quit) {
                 
@@ -648,35 +633,22 @@ int main(int argc, char* argv[]) {
                         // User requests quit
                         quit = TRUE;
                         
-                    } else if (event.type == SDL_KEYDOWN) {
-                       
-                        switch (event.key.keysym.sym) {
-                            case SDLK_s:
-                                if (Timer_IsStarted(timer)) {
-                                    Timer_Stop(timer);
-                                } else {
-                                    Timer_Start(timer);
-                                }
-                                break;
-                                
-                            case SDLK_p:
-                                if (Timer_IsPaused(timer)) {
-                                    Timer_Unpause(timer);
-                                } else {
-                                    Timer_Pause(timer);
-                                }
-                                break;
-                        }
                     }
                     
                 }
                 
+                // Calculate and correct fps
+                float avg_fps = counted_frames / (Timer_GetTicks(timer) / 1000.f);
+                if (avg_fps > 200) {
+                    avg_fps = 0;
+                }
+                
                 // Set text to be rendered
-                snprintf(buffer, size_of_buffer, "Milliseconds since start time %f", Timer_GetTicks(timer)/1000.f);
+                snprintf(buffer, size_of_buffer, "Average Frames per Second: %f", avg_fps);
                 
                 // Render text
-                gTimeTextTexture = Texture_New();
-                if (!Texture_LoadFromRenderedText(gTimeTextTexture, buffer, text_color)) {
+                gFPSTextTexture = Texture_New();
+                if (!Texture_LoadFromRenderedText(gFPSTextTexture, buffer, text_color)) {
                     printf("Unable to render time texture!\n");
                 }
                 
@@ -685,14 +657,14 @@ int main(int argc, char* argv[]) {
                 SDL_RenderClear(gRenderer);
                 
                 // Render textures
-                Texture_Render(gPromptTextTexture, (SCREEN_WIDTH - Texture_GetWidth(gPromptTextTexture))/2, 0, NULL, 0.0, NULL, SDL_FLIP_NONE);
-                Texture_Render(gTimeTextTexture, (SCREEN_WIDTH - Texture_GetWidth(gTimeTextTexture))/2, (SCREEN_HEIGHT - Texture_GetHeight(gTimeTextTexture))/2, NULL, 0.0, NULL, SDL_FLIP_NONE);
+                Texture_Render(gFPSTextTexture, (SCREEN_WIDTH - Texture_GetWidth(gFPSTextTexture)) / 2, (SCREEN_HEIGHT - Texture_GetHeight(gFPSTextTexture)) / 2, NULL, 0.0, NULL, SDL_FLIP_NONE);
                 
                 // Update the surface
                 SDL_RenderPresent(gRenderer);
                 
                 // Sleeps the window
                 SDL_Delay(10);
+                ++counted_frames;
             }
             
             Timer_Destroy(timer);
