@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		ABED5E55241D345E00E3AE7A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = ABED5E54241D345E00E3AE7A /* main.c */; };
-		ABED5E58241D348E00E3AE7A /* graphic.c in Sources */ = {isa = PBXBuildFile; fileRef = ABED5E57241D348E00E3AE7A /* graphic.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,12 +23,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		ABC707FE241D7A99007B36C4 /* hello_world.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; name = hello_world.bmp; path = ../../../../Downloads/02_getting_an_image_on_the_screen/hello_world.bmp; sourceTree = "<group>"; };
-		ABC707FF241D7E1F007B36C4 /* hello_world.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = hello_world.bmp; sourceTree = "<group>"; };
+		ABD60CC624285B2E00B4705D /* high.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = high.wav; sourceTree = "<group>"; };
+		ABD60CC724285B2E00B4705D /* prompt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = prompt.png; sourceTree = "<group>"; };
+		ABD60CC824285B2E00B4705D /* scratch.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = scratch.wav; sourceTree = "<group>"; };
+		ABD60CC924285B2E00B4705D /* beat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beat.wav; sourceTree = "<group>"; };
+		ABD60CCA24285B2E00B4705D /* low.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = low.wav; sourceTree = "<group>"; };
+		ABD60CCB24285B2E00B4705D /* medium.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = medium.wav; sourceTree = "<group>"; };
 		ABE162A32419811000D61E72 /* SDL-Tutorial */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "SDL-Tutorial"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABED5E54241D345E00E3AE7A /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		ABED5E56241D348E00E3AE7A /* graphic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graphic.h; sourceTree = "<group>"; };
-		ABED5E57241D348E00E3AE7A /* graphic.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = graphic.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,11 +63,13 @@
 		ABE162A52419811000D61E72 /* SDL-Tutorial */ = {
 			isa = PBXGroup;
 			children = (
-				ABED5E56241D348E00E3AE7A /* graphic.h */,
-				ABC707FF241D7E1F007B36C4 /* hello_world.bmp */,
-				ABED5E57241D348E00E3AE7A /* graphic.c */,
-				ABC707FE241D7A99007B36C4 /* hello_world.bmp */,
 				ABED5E54241D345E00E3AE7A /* main.c */,
+				ABD60CC924285B2E00B4705D /* beat.wav */,
+				ABD60CC624285B2E00B4705D /* high.wav */,
+				ABD60CCA24285B2E00B4705D /* low.wav */,
+				ABD60CCB24285B2E00B4705D /* medium.wav */,
+				ABD60CC724285B2E00B4705D /* prompt.png */,
+				ABD60CC824285B2E00B4705D /* scratch.wav */,
 			);
 			path = "SDL-Tutorial";
 			sourceTree = "<group>";
@@ -128,7 +131,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ABED5E58241D348E00E3AE7A /* graphic.c in Sources */,
 				ABED5E55241D345E00E3AE7A /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -258,6 +260,13 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				GCC_NO_COMMON_BLOCKS = NO;
+				"OTHER_LDFLAGS[arch=*]" = (
+					"-L/usr/local/lib",
+					"-lSDL2",
+					"-lSDL2_image",
+					"-lSDL2_ttf",
+					"-lSDL2_mixer",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;

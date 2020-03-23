@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/jva/Documents/projects/fourier-drawing/SDL-Tutorial.xcodeproj">
+      location = "group:/Users/jva/Documents/projects/SDL-Tutorial/SDL-Tutorial/x.bmp">
+   </FileRef>
+   <FileRef
+      location = "self:">
    </FileRef>
 </Workspace>

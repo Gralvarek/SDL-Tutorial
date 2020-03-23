@@ -104,6 +104,35 @@ void Button_HandleEvent(Button *self, SDL_Event* event);
 void Button_Render(Button *self);
 **/
 
+
+// Time class
+
+typedef struct _Timer {
+    Uint32 start_ticks; // The clock timer when the timer started
+    Uint32 paused_ticks; // The ticks stored when the timer was paused
+    bool paused; // The timer status
+    bool started;
+} Timer;
+
+
+Timer *Timer_New(void);
+void Timer_Init(Timer *self);
+
+void Timer_Destroy(Timer *self);
+void Timer_DeleteMembers(Timer *self);
+
+void Timer_Start(Timer *self);
+void Timer_Stop(Timer *self);
+void Timer_Pause(Timer *self);
+void Timer_Unpause(Timer *self);
+
+Uint32 Timer_GetTicks(Timer *self);
+
+bool Timer_IsStarted(Timer *self);
+bool Timer_IsPaused(Timer *self);
+
+
+
 // Function prototypes
 
 // Starts up SDL and creates window
@@ -362,6 +391,117 @@ void Button_Render(Button *self) {
 **/
 
 
+Timer *Timer_New() {
+    Timer *self = (Timer *)malloc(sizeof(Timer));
+    Timer_Init(self);
+    return self;
+}
+
+
+void Timer_Init(Timer *self) {
+    self->start_ticks = 0;
+    self->paused_ticks = 0;
+    self->started = FALSE;
+    self->paused = FALSE;
+}
+
+void Timer_Destroy(Timer *self) {
+    if (self != NULL) {
+        Timer_DeleteMembers(self);
+        free(self);
+    }
+}
+
+void Timer_DeleteMembers(Timer *self) {
+    self->start_ticks = 0;
+    self->paused_ticks = 0;
+    self->started = FALSE;
+    self->paused = FALSE;
+}
+
+
+void Timer_Start(Timer *self) {
+    // Start the timer
+    self->started = TRUE;
+    
+    // Unpause the timer
+    self->paused = FALSE;
+    
+    // Get the current clock time
+    self->start_ticks = SDL_GetTicks();
+    self->paused_ticks = 0;
+}
+
+void Timer_Stop(Timer *self) {
+    // Stop the timer
+    self->started = FALSE;
+    
+    // Unpause the timer
+    self->paused = FALSE;
+    
+    // Clear the tick variables
+    self->start_ticks = 0;
+    self->paused_ticks = 0;
+}
+
+void Timer_Pause(Timer *self) {
+    // If the timer is running and isn't paused
+    if (self->started && !self->paused) {
+        
+        // Pause the timer
+        self->paused = TRUE;
+        
+        // Calculated the paused ticks
+        self->paused_ticks = SDL_GetTicks() - self->start_ticks;
+        self->start_ticks = 0;
+    }
+    
+}
+
+void Timer_Unpause(Timer *self) {
+    // If the timer is running and paused
+    if (self->started && self->paused) {
+        
+        // Unpause the timer
+        self->paused = FALSE;
+        
+        // Reset the starting ticks
+        self->start_ticks = SDL_GetTicks() - self->paused_ticks;
+        
+        // Reset the paused ticks
+        self->paused_ticks = 0;
+    }
+}
+
+Uint32 Timer_GetTicks(Timer *self) {
+    
+    // The actual timer time
+    Uint32 time = 0;
+    
+    // If the timer is running
+    if (self->started) {
+        // If the timer is paused
+        if (self->paused) {
+            // Return the number of ticks when the timer was paused
+            time = self->paused_ticks;
+        } else {
+            // Return the current time minus the start time
+            time = SDL_GetTicks() - self->start_ticks;
+        }
+    }
+    
+    return time;
+}
+
+bool Timer_IsStarted(Timer *self) {
+    // Timer is running and paused or unpaused
+    return self->started;
+}
+
+bool Timer_IsPaused(Timer *self) {
+    // Timer is running and paused
+    return self->paused && self->started;
+}
 bool InitWindow() {
     
     // Initialization flag
@@ -492,8 +632,8 @@ int main(int argc, char* argv[]) {
             // Set text color as black
             SDL_Color text_color = {0, 0, 0, 255};
             
-            // Current time start time
-            Uint32 start_time = 0;
+            // The application timer
+            Timer *timer = Timer_New();
             
             // In memory text
             int size_of_buffer = 50;
@@ -508,14 +648,31 @@ int main(int argc, char* argv[]) {
                         // User requests quit
                         quit = TRUE;
                         
-                    } else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN) {
-                        start_time = SDL_GetTicks();
+                    } else if (event.type == SDL_KEYDOWN) {
+                       
+                        switch (event.key.keysym.sym) {
+                            case SDLK_s:
+                                if (Timer_IsStarted(timer)) {
+                                    Timer_Stop(timer);
+                                } else {
+                                    Timer_Start(timer);
+                                }
+                                break;
+                                
+                            case SDLK_p:
+                                if (Timer_IsPaused(timer)) {
+                                    Timer_Unpause(timer);
+                                } else {
+                                    Timer_Pause(timer);
+                                }
+                                break;
+                        }
                     }
                     
                 }
                 
                 // Set text to be rendered
-                snprintf(buffer, size_of_buffer, "Milliseconds since start time %u", SDL_GetTicks() - start_time);
+                snprintf(buffer, size_of_buffer, "Milliseconds since start time %f", Timer_GetTicks(timer)/1000.f);
                 
                 // Render text
                 gTimeTextTexture = Texture_New();
@@ -537,8 +694,13 @@ int main(int argc, char* argv[]) {
                 // Sleeps the window
                 SDL_Delay(10);
             }
+            
+            Timer_Destroy(timer);
+            timer = NULL;
         }
     }
+    
+    
     
     // Free resources and close SDL
     CloseSDL();
