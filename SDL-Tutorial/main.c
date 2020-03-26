@@ -17,6 +17,8 @@ typedef enum {FALSE = 0 , TRUE = 1} bool;
 // Screen constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
+const int SCREEN_FPS = 60;
+const int SCREEN_TICKS_PER_FRAME = 1000/SCREEN_FPS;
 
 // Button constants
 const int BUTTON_WIDTH = 300;
@@ -499,6 +501,11 @@ bool Timer_IsPaused(Timer *self) {
     // Timer is running and paused
     return self->paused && self->started;
 }
+
+
+
+
+
 bool InitWindow() {
     
     // Initialization flag
@@ -518,7 +525,7 @@ bool InitWindow() {
         } else {
             
             // Create renderer for window
-            gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+            gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
             if (gRenderer == NULL) {
                 printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
                 success = FALSE;
@@ -614,18 +621,24 @@ int main(int argc, char* argv[]) {
             // Set text color as black
             SDL_Color text_color = {0, 0, 0, 255};
             
-            // The application timer
-            Timer *timer = Timer_New();
+            // The fps timer
+            Timer *fps_timer = Timer_New();
+            
+            // The fps cap timer
+            Timer *cap_timer = Timer_New();
             
             // In memory text
             int size_of_buffer = 50;
             char buffer[size_of_buffer];
             
             int counted_frames = 0;
-            Timer_Start(timer);
+            Timer_Start(fps_timer);
             
             // Application loop
             while (!quit) {
+                
+                // Start cap timer
+                Timer_Start(cap_timer);
                 
                 // Handle event in queue
                 while (SDL_PollEvent(&event) != 0) {
@@ -638,13 +651,13 @@ int main(int argc, char* argv[]) {
                 }
                 
                 // Calculate and correct fps
-                float avg_fps = counted_frames / (Timer_GetTicks(timer) / 1000.f);
-                if (avg_fps > 200) {
+                float avg_fps = counted_frames / (Timer_GetTicks(fps_timer) / 1000.f);
+                if (avg_fps > 2000000) {
                     avg_fps = 0;
                 }
                 
                 // Set text to be rendered
-                snprintf(buffer, size_of_buffer, "Average Frames per Second: %f", avg_fps);
+                snprintf(buffer, size_of_buffer, "Average Frames per Second (with cap): %f", avg_fps);
                 
                 // Render text
                 gFPSTextTexture = Texture_New();
@@ -663,12 +676,21 @@ int main(int argc, char* argv[]) {
                 SDL_RenderPresent(gRenderer);
                 
                 // Sleeps the window
-                SDL_Delay(10);
+                //SDL_Delay(10);
                 ++counted_frames;
+                
+                // If frame finished early
+                int frame_ticks = Timer_GetTicks(cap_timer);
+                if (frame_ticks < SCREEN_TICKS_PER_FRAME) {
+                    // Wait remaining time
+                    SDL_Delay(SCREEN_TICKS_PER_FRAME - frame_ticks);
+                }
             }
             
-            Timer_Destroy(timer);
-            timer = NULL;
+            Timer_Destroy(fps_timer);
+            Timer_Destroy(cap_timer);
+            fps_timer = NULL;
+            cap_timer = NULL;
         }
     }
     
