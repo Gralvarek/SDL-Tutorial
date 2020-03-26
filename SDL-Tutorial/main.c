@@ -107,7 +107,7 @@ void Button_Render(Button *self);
 **/
 
 
-// Time class
+// Timer class
 
 typedef struct _Timer {
     Uint32 start_ticks; // The clock timer when the timer started
@@ -135,6 +135,36 @@ bool Timer_IsPaused(Timer *self);
 
 
 
+// Dot class
+
+typedef struct _Dot {
+    int pos_x, pos_y;
+    int vel_x, vel_y;
+} Dot;
+
+// The dimensions of the dot
+static const int DOT_WIDTH = 20;
+static const int DOT_HEIGHT = 20;
+
+// Maximum axis velocity of the dot
+static const int DOT_VEL = 10;
+
+
+Dot *Dot_New(void);
+void Dot_Init(Dot *self);
+
+void Dot_Destroy(Dot *self);
+void Dot_DeleteMembers(Dot *self);
+
+void Dot_HandleEvent(Dot *self, SDL_Event *event);
+void Dot_Move(Dot *self);
+void Dot_Render(Dot *self);
+
+
+
+
+
+
 // Function prototypes
 
 // Starts up SDL and creates window
@@ -153,10 +183,20 @@ SDL_Window *gWindow = NULL;
 SDL_Renderer *gRenderer = NULL;
 
 // Time text texture
-Texture *gFPSTextTexture = NULL;
+Texture *gDotTexture = NULL;
 
 // Global font
 TTF_Font* gFont = NULL;
+
+
+
+
+
+
+
+
+
+
 
 
 // Texture function definitions
@@ -389,6 +429,8 @@ void Button_Render(Button *self) {
 
 **/
 
+// Timer function definitions
+
 
 Timer *Timer_New() {
     Timer *self = (Timer *)malloc(sizeof(Timer));
@@ -506,6 +548,118 @@ bool Timer_IsPaused(Timer *self) {
 
 
 
+
+// Dot function definitions
+
+Dot *Dot_New() {
+    Dot *self = (Dot *)malloc(sizeof(Dot));
+    Dot_Init(self);
+    return self;
+}
+
+void Dot_Init(Dot *self) {
+    
+    // Initialize the offsets
+    self->pos_x = 0;
+    self->pos_y = 0;
+    
+    // Initialize the velocity
+    self->vel_x = 0;
+    self->vel_y = 0;
+}
+
+void Dot_Destroy(Dot *self) {
+    if (self != NULL) {
+        Dot_DeleteMembers(self);
+        free(self);
+    }
+}
+
+void Dot_DeleteMembers(Dot *self) {
+    self->pos_x = 0;
+    self->pos_y = 0;
+    
+    self->vel_x = 0;
+    self->vel_y = 0;
+}
+
+void Dot_HandleEvent(Dot *self, SDL_Event *event) {
+    
+    // If a key is pressed
+    if (event->type == SDL_KEYDOWN && event->key.repeat == 0) {
+        
+        // Adjust the velocity
+        switch (event->key.keysym.sym) {
+            case SDLK_UP:
+                self->vel_y -= DOT_VEL;
+                break;
+            
+            case SDLK_DOWN:
+                self->vel_y += DOT_VEL;
+                break;
+                
+            case SDLK_LEFT:
+                self->vel_x -= DOT_VEL;
+                break;
+            
+            case SDLK_RIGHT:
+                self->vel_x += DOT_VEL;
+                break;
+        }
+    } else if (event->type == SDL_KEYUP && event->key.repeat == 0) {
+        
+        // Adjust the velocity
+        switch (event->key.keysym.sym) {
+            case SDLK_UP:
+                self->vel_y += DOT_VEL;
+                break;
+            
+            case SDLK_DOWN:
+                self->vel_y -= DOT_VEL;
+                break;
+                
+            case SDLK_LEFT:
+                self->vel_x += DOT_VEL;
+                break;
+            
+            case SDLK_RIGHT:
+                self->vel_x -= DOT_VEL;
+                break;
+        }
+    }
+}
+
+
+void Dot_Move(Dot *self) {
+    
+    // Move the dot to the left or right
+    self->pos_x += self->vel_x;
+    
+    // If the dot went too far to the left or the right
+    if ((self->pos_x < 0) || (self->pos_x + DOT_WIDTH > SCREEN_WIDTH)) {
+        // Move back
+        self->pos_x -= self->vel_x;
+    }
+    
+    // Move the dot up or down
+    self->pos_y += self->vel_y;
+    
+    // If the dot went too far up or down
+    if ((self->pos_y < 0) || (self->pos_y + DOT_HEIGHT > SCREEN_HEIGHT)) {
+        // Move back
+        self->pos_y -= self->vel_y;
+    }
+}
+
+void Dot_Render(Dot *self) {
+    // Show the dot
+    Texture_Render(gDotTexture, self->pos_x, self->pos_y, NULL, 0.0, NULL, SDL_FLIP_NONE);
+}
+
+
+
+
+
 bool InitWindow() {
     
     // Initialization flag
@@ -525,7 +679,7 @@ bool InitWindow() {
         } else {
             
             // Create renderer for window
-            gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+            gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
             if (gRenderer == NULL) {
                 printf("Renderer could not be created! SDL_Error: %s\n", SDL_GetError());
                 success = FALSE;
@@ -560,10 +714,10 @@ bool LoadMedia() {
     // Loading success flag
     bool success = TRUE;
     
-    // Open the font
-    gFont = TTF_OpenFont("lazy.ttf", 28);
-    if (gFont == NULL) {
-        printf("Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError());
+    // Load the dot texture
+    gDotTexture = Texture_New();
+    if (!Texture_LoadFromFile(gDotTexture, "dot.bmp")) {
+        printf("Unable to render dot texture!\n");
         success = FALSE;
     }
     
@@ -573,8 +727,8 @@ bool LoadMedia() {
 void CloseSDL() {
     
     // Free loaded images
-    Texture_Destroy(gFPSTextTexture);
-    gFPSTextTexture = NULL;
+    Texture_Destroy(gDotTexture);
+    gDotTexture = NULL;
     
     TTF_CloseFont(gFont);
     gFont = NULL;
@@ -618,27 +772,11 @@ int main(int argc, char* argv[]) {
             // Event handler
             SDL_Event event;
             
-            // Set text color as black
-            SDL_Color text_color = {0, 0, 0, 255};
-            
-            // The fps timer
-            Timer *fps_timer = Timer_New();
-            
-            // The fps cap timer
-            Timer *cap_timer = Timer_New();
-            
-            // In memory text
-            int size_of_buffer = 50;
-            char buffer[size_of_buffer];
-            
-            int counted_frames = 0;
-            Timer_Start(fps_timer);
+            // The dot that will be moving around on the screen
+            Dot *dot = Dot_New();
             
             // Application loop
             while (!quit) {
-                
-                // Start cap timer
-                Timer_Start(cap_timer);
                 
                 // Handle event in queue
                 while (SDL_PollEvent(&event) != 0) {
@@ -648,49 +786,25 @@ int main(int argc, char* argv[]) {
                         
                     }
                     
+                    // Handle input for the dot
+                    Dot_HandleEvent(dot, &event);
                 }
                 
-                // Calculate and correct fps
-                float avg_fps = counted_frames / (Timer_GetTicks(fps_timer) / 1000.f);
-                if (avg_fps > 2000000) {
-                    avg_fps = 0;
-                }
-                
-                // Set text to be rendered
-                snprintf(buffer, size_of_buffer, "Average Frames per Second (with cap): %f", avg_fps);
-                
-                // Render text
-                gFPSTextTexture = Texture_New();
-                if (!Texture_LoadFromRenderedText(gFPSTextTexture, buffer, text_color)) {
-                    printf("Unable to render time texture!\n");
-                }
+                // Move the dot
+                Dot_Move(dot);
                 
                 // Clear the screen
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
                 SDL_RenderClear(gRenderer);
                 
-                // Render textures
-                Texture_Render(gFPSTextTexture, (SCREEN_WIDTH - Texture_GetWidth(gFPSTextTexture)) / 2, (SCREEN_HEIGHT - Texture_GetHeight(gFPSTextTexture)) / 2, NULL, 0.0, NULL, SDL_FLIP_NONE);
+                // Render dot
+                Dot_Render(dot);
                 
                 // Update the surface
                 SDL_RenderPresent(gRenderer);
-                
-                // Sleeps the window
-                //SDL_Delay(10);
-                ++counted_frames;
-                
-                // If frame finished early
-                int frame_ticks = Timer_GetTicks(cap_timer);
-                if (frame_ticks < SCREEN_TICKS_PER_FRAME) {
-                    // Wait remaining time
-                    SDL_Delay(SCREEN_TICKS_PER_FRAME - frame_ticks);
-                }
             }
-            
-            Timer_Destroy(fps_timer);
-            Timer_Destroy(cap_timer);
-            fps_timer = NULL;
-            cap_timer = NULL;
+            Dot_Destroy(dot);
+            dot = NULL;
         }
     }
     
