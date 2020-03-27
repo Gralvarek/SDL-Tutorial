@@ -17,8 +17,6 @@ typedef enum {FALSE = 0 , TRUE = 1} bool;
 // Screen constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
-const int SCREEN_FPS = 60;
-const int SCREEN_TICKS_PER_FRAME = 1000/SCREEN_FPS;
 
 // Button constants
 const int BUTTON_WIDTH = 300;
@@ -32,6 +30,11 @@ typedef enum _ButtonSprite {
     BUTTON_SPRITE_MOUSE_UP = 3,
     BUTTON_SPRITE_TOTAL = 4
 } ButtonSprite;
+
+
+
+
+
 
 
 // Texture class
@@ -78,6 +81,9 @@ int Texture_GetHeight(Texture *self);
 
 
 
+
+
+
 // Button class
 /**
 // Hide this when adapting to multi file program
@@ -107,6 +113,10 @@ void Button_Render(Button *self);
 **/
 
 
+
+
+
+
 // Timer class
 
 typedef struct _Timer {
@@ -132,6 +142,11 @@ Uint32 Timer_GetTicks(Timer *self);
 
 bool Timer_IsStarted(Timer *self);
 bool Timer_IsPaused(Timer *self);
+
+
+
+
+
 
 
 
@@ -165,6 +180,7 @@ void Dot_Render(Dot *self);
 
 
 
+
 // Function prototypes
 
 // Starts up SDL and creates window
@@ -187,8 +203,6 @@ Texture *gDotTexture = NULL;
 
 // Global font
 TTF_Font* gFont = NULL;
-
-
 
 
 
@@ -609,6 +623,7 @@ void Dot_HandleEvent(Dot *self, SDL_Event *event) {
     } else if (event->type == SDL_KEYUP && event->key.repeat == 0) {
         
         // Adjust the velocity
+        // I might be able to simply just set all these values to 0
         switch (event->key.keysym.sym) {
             case SDLK_UP:
                 self->vel_y += DOT_VEL;
@@ -773,7 +788,8 @@ int main(int argc, char* argv[]) {
             SDL_Event event;
             
             // The dot that will be moving around on the screen
-            Dot *dot = Dot_New();
+            Dot dot;
+            Dot_Init(&dot);
             
             // Application loop
             while (!quit) {
@@ -787,24 +803,22 @@ int main(int argc, char* argv[]) {
                     }
                     
                     // Handle input for the dot
-                    Dot_HandleEvent(dot, &event);
+                    Dot_HandleEvent(&dot, &event);
                 }
                 
                 // Move the dot
-                Dot_Move(dot);
+                Dot_Move(&dot);
                 
                 // Clear the screen
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
                 SDL_RenderClear(gRenderer);
                 
                 // Render dot
-                Dot_Render(dot);
+                Dot_Render(&dot);
                 
                 // Update the surface
                 SDL_RenderPresent(gRenderer);
             }
-            Dot_Destroy(dot);
-            dot = NULL;
         }
     }
     
