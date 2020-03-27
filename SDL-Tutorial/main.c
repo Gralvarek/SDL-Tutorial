@@ -155,6 +155,7 @@ bool Timer_IsPaused(Timer *self);
 typedef struct _Dot {
     int pos_x, pos_y;
     int vel_x, vel_y;
+    SDL_Rect collider;
 } Dot;
 
 // The dimensions of the dot
@@ -172,7 +173,7 @@ void Dot_Destroy(Dot *self);
 void Dot_DeleteMembers(Dot *self);
 
 void Dot_HandleEvent(Dot *self, SDL_Event *event);
-void Dot_Move(Dot *self);
+void Dot_Move(Dot *self, SDL_Rect* wall);
 void Dot_Render(Dot *self);
 
 
@@ -189,6 +190,8 @@ bool InitWindow(void);
 bool LoadMedia(void);
 // Frees media and shuts down SDL
 void CloseSDL(void);
+// Collision detection
+bool check_collision(SDL_Rect a, SDL_Rect b);
 
 // Global variables
 
@@ -580,6 +583,10 @@ void Dot_Init(Dot *self) {
     // Initialize the velocity
     self->vel_x = 0;
     self->vel_y = 0;
+    
+    // Initialize the collision box dimensions
+    self->collider.w = DOT_WIDTH;
+    self->collider.h = DOT_HEIGHT;
 }
 
 void Dot_Destroy(Dot *self) {
@@ -595,6 +602,9 @@ void Dot_DeleteMembers(Dot *self) {
     
     self->vel_x = 0;
     self->vel_y = 0;
+    
+    self->collider.w = DOT_WIDTH;
+    self->collider.h = DOT_HEIGHT;
 }
 
 void Dot_HandleEvent(Dot *self, SDL_Event *event) {
@@ -645,24 +655,29 @@ void Dot_HandleEvent(Dot *self, SDL_Event *event) {
 }
 
 
-void Dot_Move(Dot *self) {
+void Dot_Move(Dot *self, SDL_Rect* wall) {
     
     // Move the dot to the left or right
     self->pos_x += self->vel_x;
+    self->collider.x = self->pos_x;
     
     // If the dot went too far to the left or the right
-    if ((self->pos_x < 0) || (self->pos_x + DOT_WIDTH > SCREEN_WIDTH)) {
+    if ((self->pos_x < 0) || (self->pos_x + DOT_WIDTH > SCREEN_WIDTH) || check_collision(self->collider, *wall)) {
         // Move back
         self->pos_x -= self->vel_x;
+        self->collider.x = self->pos_x;
     }
+    
     
     // Move the dot up or down
     self->pos_y += self->vel_y;
+    self->collider.y = self->pos_y;
     
     // If the dot went too far up or down
-    if ((self->pos_y < 0) || (self->pos_y + DOT_HEIGHT > SCREEN_HEIGHT)) {
+    if ((self->pos_y < 0) || (self->pos_y + DOT_HEIGHT > SCREEN_HEIGHT) || check_collision(self->collider, *wall)) {
         // Move back
         self->pos_y -= self->vel_y;
+        self->collider.y = self->pos_y;
     }
 }
 
@@ -672,6 +687,50 @@ void Dot_Render(Dot *self) {
 }
 
 
+
+
+
+
+
+bool check_collision(SDL_Rect a, SDL_Rect b) {
+    
+    // The sides of the rectangle
+    int left_a, left_b;
+    int right_a, right_b;
+    int top_a, top_b;
+    int bottom_a, bottom_b;
+    
+    // Calculate the sides of rect A
+    left_a = a.x;
+    right_a = a.x + a.w;
+    top_a = a.y;
+    bottom_a = a.y + a.h;
+    
+    // Calculate the sides of rect B
+    left_b = b.x;
+    right_b = b.x + b.w;
+    top_b = b.y;
+    bottom_b = b.y + b.h;
+
+    // If any of the sides of A are outside B
+    if (bottom_a <= top_b) {
+        return FALSE;
+    }
+    
+    if (top_a >= bottom_b) {
+        return FALSE;
+    }
+    
+    if (right_a <= left_b) {
+        return FALSE;
+    }
+    
+    if (left_a >= right_b) {
+        return FALSE;
+    }
+    
+    return TRUE;
+}
 
 
 
@@ -791,6 +850,13 @@ int main(int argc, char* argv[]) {
             Dot dot;
             Dot_Init(&dot);
             
+            // Collision wall
+            SDL_Rect wall;
+            wall.x = 300;
+            wall.y = 40;
+            wall.w = 40;
+            wall.h = 400;
+            
             // Application loop
             while (!quit) {
                 
@@ -807,11 +873,15 @@ int main(int argc, char* argv[]) {
                 }
                 
                 // Move the dot
-                Dot_Move(&dot);
+                Dot_Move(&dot, &wall);
                 
                 // Clear the screen
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
                 SDL_RenderClear(gRenderer);
+                
+                // Render wall
+                SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
+                SDL_RenderDrawRect(gRenderer, &wall);
                 
                 // Render dot
                 Dot_Render(&dot);
