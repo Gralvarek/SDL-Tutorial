@@ -8,6 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		ABED5E55241D345E00E3AE7A /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = ABED5E54241D345E00E3AE7A /* main.c */; };
+		ABFC6EA3242ECEDE00E328FD /* Texture.c in Sources */ = {isa = PBXBuildFile; fileRef = ABFC6EA2242ECEDE00E328FD /* Texture.c */; };
+		ABFC6EA6242ECEE800E328FD /* Dot.c in Sources */ = {isa = PBXBuildFile; fileRef = ABFC6EA5242ECEE800E328FD /* Dot.c */; };
+		ABFC6EA9242ECEF300E328FD /* Button.c in Sources */ = {isa = PBXBuildFile; fileRef = ABFC6EA8242ECEF300E328FD /* Button.c */; };
+		ABFC6EAC242ECEFF00E328FD /* Timer.c in Sources */ = {isa = PBXBuildFile; fileRef = ABFC6EAB242ECEFF00E328FD /* Timer.c */; };
+		ABFC6EB0242ED03200E328FD /* CheckCollision.c in Sources */ = {isa = PBXBuildFile; fileRef = ABFC6EAF242ED03200E328FD /* CheckCollision.c */; };
+		ABFC6EB3242ED0A300E328FD /* Constants.c in Sources */ = {isa = PBXBuildFile; fileRef = ABFC6EB2242ED0A300E328FD /* Constants.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,14 +29,22 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		ABD60CC624285B2E00B4705D /* high.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = high.wav; sourceTree = "<group>"; };
-		ABD60CC724285B2E00B4705D /* prompt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = prompt.png; sourceTree = "<group>"; };
-		ABD60CC824285B2E00B4705D /* scratch.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = scratch.wav; sourceTree = "<group>"; };
-		ABD60CC924285B2E00B4705D /* beat.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = beat.wav; sourceTree = "<group>"; };
-		ABD60CCA24285B2E00B4705D /* low.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = low.wav; sourceTree = "<group>"; };
-		ABD60CCB24285B2E00B4705D /* medium.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = medium.wav; sourceTree = "<group>"; };
 		ABE162A32419811000D61E72 /* SDL-Tutorial */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "SDL-Tutorial"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABED5E54241D345E00E3AE7A /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		ABFC6EA0242D63C900E328FD /* dot.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = dot.bmp; sourceTree = "<group>"; };
+		ABFC6EA1242ECEDE00E328FD /* Texture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Texture.h; sourceTree = "<group>"; };
+		ABFC6EA2242ECEDE00E328FD /* Texture.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Texture.c; sourceTree = "<group>"; };
+		ABFC6EA4242ECEE800E328FD /* Dot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Dot.h; sourceTree = "<group>"; };
+		ABFC6EA5242ECEE800E328FD /* Dot.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Dot.c; sourceTree = "<group>"; };
+		ABFC6EA7242ECEF300E328FD /* Button.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Button.h; sourceTree = "<group>"; };
+		ABFC6EA8242ECEF300E328FD /* Button.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Button.c; sourceTree = "<group>"; };
+		ABFC6EAA242ECEFF00E328FD /* Timer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Timer.h; sourceTree = "<group>"; };
+		ABFC6EAB242ECEFF00E328FD /* Timer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Timer.c; sourceTree = "<group>"; };
+		ABFC6EAD242ECFCE00E328FD /* Circle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Circle.h; sourceTree = "<group>"; };
+		ABFC6EAE242ED03200E328FD /* CheckCollision.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CheckCollision.h; sourceTree = "<group>"; };
+		ABFC6EAF242ED03200E328FD /* CheckCollision.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = CheckCollision.c; sourceTree = "<group>"; };
+		ABFC6EB1242ED0A300E328FD /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
+		ABFC6EB2242ED0A300E328FD /* Constants.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Constants.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,13 +77,21 @@
 		ABE162A52419811000D61E72 /* SDL-Tutorial */ = {
 			isa = PBXGroup;
 			children = (
+				ABFC6EA0242D63C900E328FD /* dot.bmp */,
 				ABED5E54241D345E00E3AE7A /* main.c */,
-				ABD60CC924285B2E00B4705D /* beat.wav */,
-				ABD60CC624285B2E00B4705D /* high.wav */,
-				ABD60CCA24285B2E00B4705D /* low.wav */,
-				ABD60CCB24285B2E00B4705D /* medium.wav */,
-				ABD60CC724285B2E00B4705D /* prompt.png */,
-				ABD60CC824285B2E00B4705D /* scratch.wav */,
+				ABFC6EA1242ECEDE00E328FD /* Texture.h */,
+				ABFC6EA2242ECEDE00E328FD /* Texture.c */,
+				ABFC6EA4242ECEE800E328FD /* Dot.h */,
+				ABFC6EA5242ECEE800E328FD /* Dot.c */,
+				ABFC6EA7242ECEF300E328FD /* Button.h */,
+				ABFC6EA8242ECEF300E328FD /* Button.c */,
+				ABFC6EAA242ECEFF00E328FD /* Timer.h */,
+				ABFC6EAB242ECEFF00E328FD /* Timer.c */,
+				ABFC6EAD242ECFCE00E328FD /* Circle.h */,
+				ABFC6EAE242ED03200E328FD /* CheckCollision.h */,
+				ABFC6EAF242ED03200E328FD /* CheckCollision.c */,
+				ABFC6EB1242ED0A300E328FD /* Constants.h */,
+				ABFC6EB2242ED0A300E328FD /* Constants.c */,
 			);
 			path = "SDL-Tutorial";
 			sourceTree = "<group>";
@@ -100,7 +122,7 @@
 		ABE1629B2419811000D61E72 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1130;
+				LastUpgradeCheck = 1140;
 				ORGANIZATIONNAME = "Asgard Inc";
 				TargetAttributes = {
 					ABE162A22419811000D61E72 = {
@@ -131,7 +153,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABFC6EAC242ECEFF00E328FD /* Timer.c in Sources */,
+				ABFC6EA6242ECEE800E328FD /* Dot.c in Sources */,
+				ABFC6EA9242ECEF300E328FD /* Button.c in Sources */,
 				ABED5E55241D345E00E3AE7A /* main.c in Sources */,
+				ABFC6EB3242ED0A300E328FD /* Constants.c in Sources */,
+				ABFC6EA3242ECEDE00E328FD /* Texture.c in Sources */,
+				ABFC6EB0242ED03200E328FD /* CheckCollision.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,6 +286,7 @@
 		ABE162AB2419811000D61E72 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				GCC_NO_COMMON_BLOCKS = NO;
 				"OTHER_LDFLAGS[arch=*]" = (
@@ -274,6 +303,7 @@
 		ABE162AC2419811000D61E72 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				GCC_NO_COMMON_BLOCKS = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
