@@ -33,6 +33,11 @@ typedef enum _ButtonSprite {
 
 
 
+typedef struct _Circle {
+    int x, y;
+    int r;
+} Circle;
+
 
 
 
@@ -155,7 +160,7 @@ bool Timer_IsPaused(Timer *self);
 typedef struct _Dot {
     int pos_x, pos_y;
     int vel_x, vel_y;
-    SDL_Rect collider;
+    Circle collider;
 } Dot;
 
 // The dimensions of the dot
@@ -163,18 +168,23 @@ static const int DOT_WIDTH = 20;
 static const int DOT_HEIGHT = 20;
 
 // Maximum axis velocity of the dot
-static const int DOT_VEL = 10;
+static const int DOT_VEL = 1;
 
 
-Dot *Dot_New(void);
-void Dot_Init(Dot *self);
+Dot *Dot_New(int, int);
+void Dot_Init(Dot *self, int, int);
 
 void Dot_Destroy(Dot *self);
 void Dot_DeleteMembers(Dot *self);
 
 void Dot_HandleEvent(Dot *self, SDL_Event *event);
-void Dot_Move(Dot *self, SDL_Rect* wall);
+void Dot_Move(Dot *self, SDL_Rect* square, Circle* circle);
 void Dot_Render(Dot *self);
+
+Circle *Dot_GetCollider(Dot *self);
+
+static void Dot_ShiftColliders(Dot *self);
+
 
 
 
@@ -190,8 +200,14 @@ bool InitWindow(void);
 bool LoadMedia(void);
 // Frees media and shuts down SDL
 void CloseSDL(void);
-// Collision detection
-bool check_collision(SDL_Rect a, SDL_Rect b);
+// Collision detection between circle and circle
+bool CheckCollision_CircleAndCircle(Circle *, Circle *);
+// Collision detection between circle and rect
+bool CheckCollision_CircleAndRect(Circle *, SDL_Rect *);
+// Collision detection between rect and rect
+bool CheckCollision_RectAndRect(SDL_Rect *, SDL_Rect *);
+// Calculates distance squared between two points
+double DistanceSquared(int, int, int, int);
 
 // Global variables
 
@@ -568,25 +584,29 @@ bool Timer_IsPaused(Timer *self) {
 
 // Dot function definitions
 
-Dot *Dot_New() {
+Dot *Dot_New(int x, int y) {
     Dot *self = (Dot *)malloc(sizeof(Dot));
-    Dot_Init(self);
+    Dot_Init(self, x, y);
     return self;
 }
 
-void Dot_Init(Dot *self) {
+void Dot_Init(Dot *self, int x, int y) {
     
     // Initialize the offsets
-    self->pos_x = 0;
-    self->pos_y = 0;
+    self->pos_x = x;
+    self->pos_y = y;
     
     // Initialize the velocity
     self->vel_x = 0;
     self->vel_y = 0;
     
     // Initialize the collision box dimensions
-    self->collider.w = DOT_WIDTH;
-    self->collider.h = DOT_HEIGHT;
+    self->collider.r = DOT_WIDTH/2;
+    
+    // Move collider relative to circle
+    Dot_ShiftColliders(self);
+    
+    
 }
 
 void Dot_Destroy(Dot *self) {
@@ -603,8 +623,7 @@ void Dot_DeleteMembers(Dot *self) {
     self->vel_x = 0;
     self->vel_y = 0;
     
-    self->collider.w = DOT_WIDTH;
-    self->collider.h = DOT_HEIGHT;
+    self->collider.r = DOT_WIDTH/2;
 }
 
 void Dot_HandleEvent(Dot *self, SDL_Event *event) {
@@ -655,35 +674,63 @@ void Dot_HandleEvent(Dot *self, SDL_Event *event) {
 }
 
 
-void Dot_Move(Dot *self, SDL_Rect* wall) {
+void Dot_Move(Dot *self, SDL_Rect* square, Circle* circle) {
     
     // Move the dot to the left or right
     self->pos_x += self->vel_x;
-    self->collider.x = self->pos_x;
+    Dot_ShiftColliders(self);
     
     // If the dot went too far to the left or the right
-    if ((self->pos_x < 0) || (self->pos_x + DOT_WIDTH > SCREEN_WIDTH) || check_collision(self->collider, *wall)) {
+    if ((self->pos_x - self->collider.r < 0) || (self->pos_x + self->collider.r > SCREEN_WIDTH) || CheckCollision_CircleAndRect(&self->collider, square) || CheckCollision_CircleAndCircle(&self->collider, circle)) {
         // Move back
         self->pos_x -= self->vel_x;
-        self->collider.x = self->pos_x;
+        Dot_ShiftColliders(self);
     }
     
     
     // Move the dot up or down
     self->pos_y += self->vel_y;
-    self->collider.y = self->pos_y;
+    Dot_ShiftColliders(self);
     
     // If the dot went too far up or down
-    if ((self->pos_y < 0) || (self->pos_y + DOT_HEIGHT > SCREEN_HEIGHT) || check_collision(self->collider, *wall)) {
+    if ((self->pos_y - self->collider.r < 0) || (self->pos_y + self->collider.r > SCREEN_HEIGHT) || CheckCollision_CircleAndRect(&self->collider, square) || CheckCollision_CircleAndCircle(&self->collider, circle)) {
         // Move back
         self->pos_y -= self->vel_y;
-        self->collider.y = self->pos_y;
+        Dot_ShiftColliders(self);
     }
 }
 
 void Dot_Render(Dot *self) {
     // Show the dot
-    Texture_Render(gDotTexture, self->pos_x, self->pos_y, NULL, 0.0, NULL, SDL_FLIP_NONE);
+    Texture_Render(gDotTexture, self->pos_x - self->collider.r, self->pos_y - self->collider.r, NULL, 0.0, NULL, SDL_FLIP_NONE);
+}
+
+Circle *Dot_GetCollider(Dot *self) {
+    return &self->collider;
+}
+
+static void Dot_ShiftColliders(Dot *self) {
+    self->collider.x = self->pos_x;
+    self->collider.y = self->pos_y;
+}
+
+
+
+
+bool CheckCollision_CircleAndCircle(Circle *a, Circle *b) {
+    
+    // Calculate total radius squared
+    int total_radius_squared = a->r + b->r;
+    total_radius_squared = total_radius_squared * total_radius_squared;
+    
+    // If the distance between the centers of the circles is less than the sum of their radii
+    if (DistanceSquared(a->x, a->y, b->x, b->y) < total_radius_squared) {
+        // The circles have collided
+        return TRUE;
+    }
+    
+    // If not
+    return FALSE;
 }
 
 
@@ -691,46 +738,48 @@ void Dot_Render(Dot *self) {
 
 
 
+bool CheckCollision_CircleAndRect(Circle *a, SDL_Rect *b) {
+    
+    // Closest point on collision box
+    int cX, cY;
+    
 
-bool check_collision(SDL_Rect a, SDL_Rect b) {
-    
-    // The sides of the rectangle
-    int left_a, left_b;
-    int right_a, right_b;
-    int top_a, top_b;
-    int bottom_a, bottom_b;
-    
-    // Calculate the sides of rect A
-    left_a = a.x;
-    right_a = a.x + a.w;
-    top_a = a.y;
-    bottom_a = a.y + a.h;
-    
-    // Calculate the sides of rect B
-    left_b = b.x;
-    right_b = b.x + b.w;
-    top_b = b.y;
-    bottom_b = b.y + b.h;
-
-    // If any of the sides of A are outside B
-    if (bottom_a <= top_b) {
-        return FALSE;
+    // Find closest x offset
+    if (a->x < b->x) {
+        cX = b->x;
+    } else if (a->x > b->x + b->w) {
+        cX = b->x + b->w;
+    } else {
+        cX = a->x;
     }
     
-    if (top_a >= bottom_b) {
-        return FALSE;
+    
+    // Find closest x offset
+    if (a->y < b->y) {
+        cY = b->y;
+    } else if (a->y > b->y + b->h) {
+        cY = b->y + b->h;
+    } else {
+        cY = a->y;
     }
     
-    if (right_a <= left_b) {
-        return FALSE;
+    // If the closest point is inside the circle
+    if (DistanceSquared(a->x, a->y, cX, cY) < a->r * a->r) {
+        // This circle and box have collided
+        return TRUE;
     }
     
-    if (left_a >= right_b) {
-        return FALSE;
-    }
-    
-    return TRUE;
+    // The shapes have not collided
+    return FALSE;
 }
+
+
+double DistanceSquared(int x1, int y1, int x2, int y2) {
+    int delta_x = x2 - x1;
+    int delta_y = y2 - y1;
+    return delta_x*delta_x + delta_y*delta_y;
+}
+
 
 
 
@@ -847,8 +896,9 @@ int main(int argc, char* argv[]) {
             SDL_Event event;
             
             // The dot that will be moving around on the screen
-            Dot dot;
-            Dot_Init(&dot);
+            Dot dot, other_dot;
+            Dot_Init(&dot, DOT_WIDTH/2, DOT_HEIGHT/2);
+            Dot_Init(&other_dot, SCREEN_WIDTH/4, SCREEN_HEIGHT/4);
             
             // Collision wall
             SDL_Rect wall;
@@ -873,7 +923,7 @@ int main(int argc, char* argv[]) {
                 }
                 
                 // Move the dot
-                Dot_Move(&dot, &wall);
+                Dot_Move(&dot, &wall, Dot_GetCollider(&other_dot));
                 
                 // Clear the screen
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
@@ -883,8 +933,9 @@ int main(int argc, char* argv[]) {
                 SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
                 SDL_RenderDrawRect(gRenderer, &wall);
                 
-                // Render dot
+                // Render dots
                 Dot_Render(&dot);
+                Dot_Render(&other_dot);
                 
                 // Update the surface
                 SDL_RenderPresent(gRenderer);
