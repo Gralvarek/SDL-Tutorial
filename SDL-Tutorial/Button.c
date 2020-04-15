@@ -53,7 +53,7 @@ void Button_HandleEvent(Button *self, SDL_Event *event) {
         SDL_GetMouseState(&x, &y);
         
         // Check if mouse is inside button
-        bool inside = TRUE;
+        boolean inside = TRUE;
         if (x < self->postion.x) {
             // Mouse is left of the button
             inside = FALSE;

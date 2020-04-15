@@ -24,9 +24,9 @@
 // Function prototypes
 
 // Starts up SDL and creates window
-bool InitWindow(void);
+boolean InitWindow(void);
 // Loads media
-bool LoadMedia(void);
+boolean LoadMedia(void);
 // Frees media and shuts down SDL
 void CloseSDL(void);
 
@@ -37,14 +37,16 @@ void CloseSDL(void);
 SDL_Window *gWindow = NULL;
 // The window renderer
 SDL_Renderer *gRenderer = NULL;
-// Time text texture
+// Dot texture
 Texture *gDotTexture = NULL;
+// Background texture
+Texture *gBGTexture = NULL;
 
 
-bool InitWindow() {
+boolean InitWindow() {
     
     // Initialization flag
-    bool success = TRUE;
+    boolean success = TRUE;
     
     // Initialize SDL
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -89,15 +91,22 @@ bool InitWindow() {
 }
 
 
-bool LoadMedia() {
+boolean LoadMedia() {
     
     // Loading success flag
-    bool success = TRUE;
+    boolean success = TRUE;
     
     // Load the dot texture
     gDotTexture = Texture_New(gRenderer);
     if (!Texture_LoadFromFile(gDotTexture, "dot.bmp")) {
         printf("Unable to render dot texture!\n");
+        success = FALSE;
+    }
+    
+    // Load the BG texture
+    gBGTexture = Texture_New(gRenderer);
+    if (!Texture_LoadFromFile(gBGTexture, "bg.png")) {
+        printf("Unable to render BG texture!\n");
         success = FALSE;
     }
     
@@ -135,22 +144,16 @@ int main(int argc, char* argv[]) {
         } else {
             
             // Exit button closes window
-            bool quit = FALSE;
+            boolean quit = FALSE;
             
             // Event handler
             SDL_Event event;
             
             // The dot that will be moving around on the screen
-            Dot dot, other_dot;
+            Dot dot;
             Dot_Init(&dot, DOT_WIDTH/2, DOT_HEIGHT/2);
-            Dot_Init(&other_dot, SCREEN_WIDTH/4, SCREEN_HEIGHT/4);
-            
-            // Collision wall
-            SDL_Rect wall;
-            wall.x = 300;
-            wall.y = 40;
-            wall.w = 40;
-            wall.h = 400;
+
+            SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
             
             // Application loop
             while (!quit) {
@@ -168,19 +171,35 @@ int main(int argc, char* argv[]) {
                 }
                 
                 // Move the dot
-                Dot_Move(&dot, &wall, Dot_GetCollider(&other_dot));
+                Dot_Move(&dot);
+                
+                // Center the camera over the dot
+                camera.x = (dot.pos_x + DOT_WIDTH/2) - SCREEN_WIDTH/2;
+                camera.y = (dot.pos_y + DOT_HEIGHT/2) - SCREEN_HEIGHT/2;
+                
+                // Keep the camera in bounds
+                if (camera.x < 0) {
+                    camera.x = 0;
+                }
+                if (camera.y < 0) {
+                    camera.y = 0;
+                }
+                if (camera.x > LEVEL_WIDTH - camera.w) {
+                    camera.x = LEVEL_WIDTH - camera.w;
+                }
+                if (camera.y > LEVEL_HEIGHT - camera.h) {
+                    camera.y = LEVEL_HEIGHT - camera.h;
+                }
                 
                 // Clear the screen
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
                 SDL_RenderClear(gRenderer);
                 
-                // Render wall
-                SDL_SetRenderDrawColor(gRenderer, 0x00, 0x00, 0x00, 0xFF);
-                SDL_RenderDrawRect(gRenderer, &wall);
+                // Render background
+                Texture_Render(gBGTexture, 0, 0, &camera, 0.0, NULL, SDL_FLIP_NONE);
                 
-                // Render dots
-                Dot_Render(&dot, gDotTexture);
-                Dot_Render(&other_dot, gDotTexture);
+                // Render dot
+                Dot_Render(&dot, gDotTexture, camera.x, camera.y);
                 
                 // Update the surface
                 SDL_RenderPresent(gRenderer);

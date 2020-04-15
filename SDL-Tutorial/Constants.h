@@ -11,11 +11,15 @@
 
 #include <stdio.h>
 
-typedef enum {FALSE = 0 , TRUE = 1} bool;
+typedef enum {FALSE = 0 , TRUE = 1} boolean;
 
 // Screen constants
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
+
+// Level constants
+extern const int LEVEL_WIDTH;
+extern const int LEVEL_HEIGHT;
 
 // Button constants
 extern const int BUTTON_WIDTH;

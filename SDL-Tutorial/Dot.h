@@ -23,7 +23,6 @@
 typedef struct _Dot {
     int pos_x, pos_y;
     int vel_x, vel_y;
-    Circle collider;
 } Dot;
 
 
@@ -38,10 +37,8 @@ void Dot_Destroy(Dot *self);
 void Dot_DeleteMembers(Dot *self);
 
 void Dot_HandleEvent(Dot *self, SDL_Event *event);
-void Dot_Move(Dot *self, SDL_Rect* square, Circle* circle);
-void Dot_Render(Dot *self, Texture *);
-
-Circle *Dot_GetCollider(Dot *self);
+void Dot_Move(Dot *self);
+void Dot_Render(Dot *self, Texture *, int camX, int camY);
 
 
 // The dimensions of the dot

@@ -113,12 +113,12 @@ Uint32 Timer_GetTicks(Timer *self) {
     return time;
 }
 
-bool Timer_IsStarted(Timer *self) {
+boolean Timer_IsStarted(Timer *self) {
     // Timer is running and paused or unpaused
     return self->started;
 }
 
-bool Timer_IsPaused(Timer *self) {
+boolean Timer_IsPaused(Timer *self) {
     // Timer is running and paused
     return self->paused && self->started;
 }

@@ -8,6 +8,14 @@
 
 #include "Texture.h"
 
+
+struct _Texture {
+    SDL_Texture *texture; // The actual hardware texture
+    int width; // Image width
+    int height; // Image height
+    SDL_Renderer *renderer; // Renderer
+};
+
 // Texture function definitions
 
 
@@ -41,7 +49,7 @@ void Texture_DeleteMembers(Texture *self) {
     }
 }
     
-bool Texture_LoadFromFile(Texture *self, const char *path) {
+boolean Texture_LoadFromFile(Texture *self, const char *path) {
     
     // Get rid of preexisting texture
     Texture_DeleteMembers(self);
@@ -79,7 +87,7 @@ bool Texture_LoadFromFile(Texture *self, const char *path) {
 }
 
 //#if defined(_SDL_TTF_H) || defined(SDL_TTF_H)
-bool Texture_LoadFromRenderedText(Texture *self, TTF_Font *font, const char *texture_text, SDL_Color text_color) {
+boolean Texture_LoadFromRenderedText(Texture *self, TTF_Font *font, const char *texture_text, SDL_Color text_color) {
     
     // Get rid of preexisting texture
     Texture_DeleteMembers(self);
@@ -142,9 +150,4 @@ int Texture_GetWidth(Texture *self) {
 
 int Texture_GetHeight(Texture *self) {
     return self->height;
-}
-    
-
-void Texture_SetRenderer(Texture *self, SDL_Renderer *renderer) {
-    self->renderer = renderer;
 }

@@ -12,6 +12,10 @@
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
+// Level constants
+const int LEVEL_WIDTH = 1280;
+const int LEVEL_HEIGHT = 960;
+
 // Button constants
 const int BUTTON_WIDTH = 300;
 const int BUTTON_HEIGHT = 200;

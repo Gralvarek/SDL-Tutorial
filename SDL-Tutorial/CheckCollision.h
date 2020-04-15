@@ -15,11 +15,11 @@
 #include <SDL.h>
 
 // Collision detection between circle and circle
-bool CheckCollision_CircleAndCircle(Circle *, Circle *);
+boolean CheckCollision_CircleAndCircle(Circle *, Circle *);
 // Collision detection between circle and rect
-bool CheckCollision_CircleAndRect(Circle *, SDL_Rect *);
+boolean CheckCollision_CircleAndRect(Circle *, SDL_Rect *);
 // Collision detection between rect and rect
-bool CheckCollision_RectAndRect(SDL_Rect *, SDL_Rect *);
+boolean CheckCollision_RectAndRect(SDL_Rect *, SDL_Rect *);
 // Calculates distance squared between two points
 double DistanceSquared(int, int, int, int);
 

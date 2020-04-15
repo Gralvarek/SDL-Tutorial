@@ -31,7 +31,8 @@
 /* Begin PBXFileReference section */
 		ABE162A32419811000D61E72 /* SDL-Tutorial */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "SDL-Tutorial"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABED5E54241D345E00E3AE7A /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		ABFC6EA0242D63C900E328FD /* dot.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = dot.bmp; sourceTree = "<group>"; };
+		ABEDDF842446D92500FBEE5B /* bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg.png; sourceTree = "<group>"; };
+		ABEDDF872446DA7A00FBEE5B /* dot.bmp */ = {isa = PBXFileReference; lastKnownFileType = image.bmp; path = dot.bmp; sourceTree = "<group>"; };
 		ABFC6EA1242ECEDE00E328FD /* Texture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Texture.h; sourceTree = "<group>"; };
 		ABFC6EA2242ECEDE00E328FD /* Texture.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Texture.c; sourceTree = "<group>"; };
 		ABFC6EA4242ECEE800E328FD /* Dot.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Dot.h; sourceTree = "<group>"; };
@@ -77,8 +78,9 @@
 		ABE162A52419811000D61E72 /* SDL-Tutorial */ = {
 			isa = PBXGroup;
 			children = (
-				ABFC6EA0242D63C900E328FD /* dot.bmp */,
+				ABEDDF872446DA7A00FBEE5B /* dot.bmp */,
 				ABED5E54241D345E00E3AE7A /* main.c */,
+				ABEDDF842446D92500FBEE5B /* bg.png */,
 				ABFC6EA1242ECEDE00E328FD /* Texture.h */,
 				ABFC6EA2242ECEDE00E328FD /* Texture.c */,
 				ABFC6EA4242ECEE800E328FD /* Dot.h */,

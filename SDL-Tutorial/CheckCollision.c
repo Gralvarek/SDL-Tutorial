@@ -10,7 +10,7 @@
 
 
 
-bool CheckCollision_CircleAndCircle(Circle *a, Circle *b) {
+boolean CheckCollision_CircleAndCircle(Circle *a, Circle *b) {
     
     // Calculate total radius squared
     int total_radius_squared = a->r + b->r;
@@ -27,7 +27,7 @@ bool CheckCollision_CircleAndCircle(Circle *a, Circle *b) {
 }
 
 
-bool CheckCollision_CircleAndRect(Circle *a, SDL_Rect *b) {
+boolean CheckCollision_CircleAndRect(Circle *a, SDL_Rect *b) {
     
     // Closest point on collision box
     int cX, cY;
@@ -62,7 +62,7 @@ bool CheckCollision_CircleAndRect(Circle *a, SDL_Rect *b) {
     return FALSE;
 }
 
-bool CheckCollision_RectAndRect(SDL_Rect *a, SDL_Rect *b) {
+boolean CheckCollision_RectAndRect(SDL_Rect *a, SDL_Rect *b) {
     
     //The sides of the rectangles
     int leftA, leftB;

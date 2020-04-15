@@ -17,8 +17,6 @@ const int DOT_HEIGHT = 20;
 const int DOT_VEL = 10;
 
 
-static void Dot_ShiftColliders(Dot *self);
-
 // Dot function definitions
 
 Dot *Dot_New(int x, int y) {
@@ -37,13 +35,6 @@ void Dot_Init(Dot *self, int x, int y) {
     self->vel_x = 0;
     self->vel_y = 0;
     
-    // Initialize the collision box dimensions
-    self->collider.r = DOT_WIDTH/2;
-    
-    // Move collider relative to circle
-    Dot_ShiftColliders(self);
-    
-    
 }
 
 void Dot_Destroy(Dot *self) {
@@ -59,8 +50,6 @@ void Dot_DeleteMembers(Dot *self) {
     
     self->vel_x = 0;
     self->vel_y = 0;
-    
-    self->collider.r = DOT_WIDTH/2;
 }
 
 void Dot_HandleEvent(Dot *self, SDL_Event *event) {
@@ -111,42 +100,29 @@ void Dot_HandleEvent(Dot *self, SDL_Event *event) {
 }
 
 
-void Dot_Move(Dot *self, SDL_Rect* square, Circle* circle) {
+void Dot_Move(Dot *self) {
     
     // Move the dot to the left or right
     self->pos_x += self->vel_x;
-    Dot_ShiftColliders(self);
     
     // If the dot went too far to the left or the right
-    if ((self->pos_x - self->collider.r < 0) || (self->pos_x + self->collider.r > SCREEN_WIDTH) || CheckCollision_CircleAndRect(&self->collider, square) || CheckCollision_CircleAndCircle(&self->collider, circle)) {
+    if ((self->pos_x < 0) || (self->pos_x + DOT_WIDTH > LEVEL_WIDTH)) {
         // Move back
         self->pos_x -= self->vel_x;
-        Dot_ShiftColliders(self);
     }
     
     
     // Move the dot up or down
     self->pos_y += self->vel_y;
-    Dot_ShiftColliders(self);
     
     // If the dot went too far up or down
-    if ((self->pos_y - self->collider.r < 0) || (self->pos_y + self->collider.r > SCREEN_HEIGHT) || CheckCollision_CircleAndRect(&self->collider, square) || CheckCollision_CircleAndCircle(&self->collider, circle)) {
+    if ((self->pos_y < 0) || (self->pos_y + DOT_HEIGHT > LEVEL_HEIGHT)) {
         // Move back
         self->pos_y -= self->vel_y;
-        Dot_ShiftColliders(self);
     }
 }
 
-void Dot_Render(Dot *self, Texture * dot_texture) {
+void Dot_Render(Dot *self, Texture * dot_texture, int camX, int camY) {
     // Show the dot
-    Texture_Render(dot_texture, self->pos_x - self->collider.r, self->pos_y - self->collider.r, NULL, 0.0, NULL, SDL_FLIP_NONE);
-}
-
-Circle *Dot_GetCollider(Dot *self) {
-    return &self->collider;
-}
-
-static void Dot_ShiftColliders(Dot *self) {
-    self->collider.x = self->pos_x;
-    self->collider.y = self->pos_y;
+    Texture_Render(dot_texture, self->pos_x - camX, self->pos_y - camY, NULL, 0.0, NULL, SDL_FLIP_NONE);
 }

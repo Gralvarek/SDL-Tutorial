@@ -17,15 +17,15 @@
 
 
 // Texture class
-
+/**
 typedef struct _Texture {
     SDL_Texture *texture; // The actual hardware texture
     int width; // Image width
     int height; // Image height
     SDL_Renderer *renderer; // Renderer
 } Texture;
-
-
+**/
+typedef struct _Texture Texture;
 
 // Allocator
 Texture *Texture_New(SDL_Renderer *);
@@ -39,10 +39,10 @@ void Texture_DeleteMembers(Texture *self);
 
 
 // Loads image at specific path
-bool Texture_LoadFromFile(Texture *self, const char* path);
+boolean Texture_LoadFromFile(Texture *self, const char* path);
 //#if defined(_SDL_TTF_H) || defined(SDL_TTF_H)
 // Creates image from font string
-bool Texture_LoadFromRenderedText(Texture *self, TTF_Font *font, const char* texture_text, SDL_Color text_color);
+boolean Texture_LoadFromRenderedText(Texture *self, TTF_Font *font, const char* texture_text, SDL_Color text_color);
 //#endif
 
 // Set color modulation
@@ -59,10 +59,6 @@ void Texture_Render(Texture *self, int x, int y, SDL_Rect* clip, double angle, S
 // Gets image dimensions
 int Texture_GetWidth(Texture *self);
 int Texture_GetHeight(Texture *self);
-
-// Sets new renderer
-void Texture_SetRenderer(Texture *self, SDL_Renderer *);
-
 
 
 #endif /* Texture_h */

@@ -22,8 +22,8 @@
 typedef struct _Timer {
     Uint32 start_ticks; // The clock timer when the timer started
     Uint32 paused_ticks; // The ticks stored when the timer was paused
-    bool paused; // The timer status
-    bool started;
+    boolean paused; // The timer status
+    boolean started;
 } Timer;
 
 
@@ -40,8 +40,8 @@ void Timer_Unpause(Timer *self);
 
 Uint32 Timer_GetTicks(Timer *self);
 
-bool Timer_IsStarted(Timer *self);
-bool Timer_IsPaused(Timer *self);
+boolean Timer_IsStarted(Timer *self);
+boolean Timer_IsPaused(Timer *self);
 
 
 
