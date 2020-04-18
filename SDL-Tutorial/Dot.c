@@ -106,7 +106,7 @@ void Dot_Move(Dot *self) {
     self->pos_x += self->vel_x;
     
     // If the dot went too far to the left or the right
-    if ((self->pos_x < 0) || (self->pos_x + DOT_WIDTH > LEVEL_WIDTH)) {
+    if ((self->pos_x < 0) || (self->pos_x + DOT_WIDTH > SCREEN_WIDTH)) {
         // Move back
         self->pos_x -= self->vel_x;
     }
@@ -116,13 +116,13 @@ void Dot_Move(Dot *self) {
     self->pos_y += self->vel_y;
     
     // If the dot went too far up or down
-    if ((self->pos_y < 0) || (self->pos_y + DOT_HEIGHT > LEVEL_HEIGHT)) {
+    if ((self->pos_y < 0) || (self->pos_y + DOT_HEIGHT > SCREEN_HEIGHT)) {
         // Move back
         self->pos_y -= self->vel_y;
     }
 }
 
-void Dot_Render(Dot *self, Texture * dot_texture, int camX, int camY) {
+void Dot_Render(Dot *self, Texture * dot_texture/*, int camX, int camY*/) {
     // Show the dot
-    Texture_Render(dot_texture, self->pos_x - camX, self->pos_y - camY, NULL, 0.0, NULL, SDL_FLIP_NONE);
+    Texture_Render(dot_texture, self->pos_x /*- camX*/, self->pos_y /*- camY*/, NULL, 0.0, NULL, SDL_FLIP_NONE);
 }

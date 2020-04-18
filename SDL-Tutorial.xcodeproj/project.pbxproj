@@ -29,6 +29,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AB962F7D244A8507004069FF /* bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg.png; sourceTree = "<group>"; };
 		ABE162A32419811000D61E72 /* SDL-Tutorial */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "SDL-Tutorial"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABED5E54241D345E00E3AE7A /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		ABEDDF842446D92500FBEE5B /* bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg.png; sourceTree = "<group>"; };
@@ -81,6 +82,7 @@
 				ABEDDF872446DA7A00FBEE5B /* dot.bmp */,
 				ABED5E54241D345E00E3AE7A /* main.c */,
 				ABEDDF842446D92500FBEE5B /* bg.png */,
+				AB962F7D244A8507004069FF /* bg.png */,
 				ABFC6EA1242ECEDE00E328FD /* Texture.h */,
 				ABFC6EA2242ECEDE00E328FD /* Texture.c */,
 				ABFC6EA4242ECEE800E328FD /* Dot.h */,

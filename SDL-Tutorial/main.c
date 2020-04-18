@@ -153,7 +153,8 @@ int main(int argc, char* argv[]) {
             Dot dot;
             Dot_Init(&dot, DOT_WIDTH/2, DOT_HEIGHT/2);
 
-            SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+            // The background scrolling offset
+            int scrolling_offset = 0;
             
             // Application loop
             while (!quit) {
@@ -173,33 +174,24 @@ int main(int argc, char* argv[]) {
                 // Move the dot
                 Dot_Move(&dot);
                 
-                // Center the camera over the dot
-                camera.x = (dot.pos_x + DOT_WIDTH/2) - SCREEN_WIDTH/2;
-                camera.y = (dot.pos_y + DOT_HEIGHT/2) - SCREEN_HEIGHT/2;
+                // Scroll background
+                --scrolling_offset;
+                if (scrolling_offset < -Texture_GetWidth(gBGTexture)) {
+                    scrolling_offset = 0;
+                }
                 
-                // Keep the camera in bounds
-                if (camera.x < 0) {
-                    camera.x = 0;
-                }
-                if (camera.y < 0) {
-                    camera.y = 0;
-                }
-                if (camera.x > LEVEL_WIDTH - camera.w) {
-                    camera.x = LEVEL_WIDTH - camera.w;
-                }
-                if (camera.y > LEVEL_HEIGHT - camera.h) {
-                    camera.y = LEVEL_HEIGHT - camera.h;
-                }
                 
                 // Clear the screen
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
                 SDL_RenderClear(gRenderer);
                 
                 // Render background
-                Texture_Render(gBGTexture, 0, 0, &camera, 0.0, NULL, SDL_FLIP_NONE);
+                Texture_Render(gBGTexture, scrolling_offset, 0, NULL, 0.0, NULL, SDL_FLIP_NONE);
+                Texture_Render(gBGTexture, scrolling_offset + Texture_GetWidth(gBGTexture), 0, NULL, 0.0, NULL, SDL_FLIP_NONE);
+
                 
                 // Render dot
-                Dot_Render(&dot, gDotTexture, camera.x, camera.y);
+                Dot_Render(&dot, gDotTexture);
                 
                 // Update the surface
                 SDL_RenderPresent(gRenderer);
