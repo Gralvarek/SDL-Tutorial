@@ -51,6 +51,9 @@ void Texture_DeleteMembers(Texture *self) {
     
 boolean Texture_LoadFromFile(Texture *self, const char *path) {
     
+    // Store renderer before it is removed
+    SDL_Renderer *renderer = self->renderer;
+    
     // Get rid of preexisting texture
     Texture_DeleteMembers(self);
     
@@ -67,7 +70,7 @@ boolean Texture_LoadFromFile(Texture *self, const char *path) {
         SDL_SetColorKey(loaded_surface, SDL_TRUE, SDL_MapRGB(loaded_surface->format, 0x00, 0xFF, 0xFF));
         
         // Create new texture from surface pixels
-        new_texture = SDL_CreateTextureFromSurface(self->renderer, loaded_surface);
+        new_texture = SDL_CreateTextureFromSurface(renderer, loaded_surface);
         if (new_texture == NULL) {
             printf("Unable to create texture from %s! SDL Error: %s\n", path, SDL_GetError());
         } else {
@@ -75,6 +78,9 @@ boolean Texture_LoadFromFile(Texture *self, const char *path) {
             // Get image dimensions
             self->width = loaded_surface->w;
             self->height = loaded_surface->h;
+            
+            // Set renderer
+            self->renderer = renderer;
         }
         
         // Get rid of old loaded surface
@@ -89,17 +95,20 @@ boolean Texture_LoadFromFile(Texture *self, const char *path) {
 //#if defined(_SDL_TTF_H) || defined(SDL_TTF_H)
 boolean Texture_LoadFromRenderedText(Texture *self, TTF_Font *font, const char *texture_text, SDL_Color text_color) {
     
+    // Store renderer before it is removed
+    SDL_Renderer *renderer = self->renderer;
+    
     // Get rid of preexisting texture
     Texture_DeleteMembers(self);
     
     // Render text surface
-    SDL_Surface * text_surface = TTF_RenderText_Solid(font, texture_text, text_color);
+    SDL_Surface *text_surface = TTF_RenderText_Solid(font, texture_text, text_color);
     if (text_surface == NULL) {
         printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
     } else {
         
         // Create texture from surface pixels
-        self->texture = SDL_CreateTextureFromSurface(self->renderer, text_surface);
+        self->texture = SDL_CreateTextureFromSurface(renderer, text_surface);
         if (self->texture == NULL) {
             printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
         } else {
@@ -107,6 +116,9 @@ boolean Texture_LoadFromRenderedText(Texture *self, TTF_Font *font, const char *
             // Get image dimensions
             self->width = text_surface->w;
             self->height = text_surface->h;
+            
+            // Assign renderer back to texture
+            self->renderer = renderer;
         }
         
         // Get rid of old surface

@@ -7,6 +7,7 @@
 //
 
 #include <stdio.h>
+#include <string.h>
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
@@ -37,10 +38,15 @@ void CloseSDL(void);
 SDL_Window *gWindow = NULL;
 // The window renderer
 SDL_Renderer *gRenderer = NULL;
-// Dot texture
-Texture *gDotTexture = NULL;
-// Background texture
-Texture *gBGTexture = NULL;
+// Global font
+TTF_Font *gFont = NULL;
+// Input Text Texture
+Texture *gInputTextTexture = NULL;
+// Prompt Text Texture
+Texture *gPromptTextTexture = NULL;
+
+
+
 
 
 boolean InitWindow() {
@@ -95,20 +101,27 @@ boolean LoadMedia() {
     
     // Loading success flag
     boolean success = TRUE;
+    //Loading success flag
     
-    // Load the dot texture
-    gDotTexture = Texture_New(gRenderer);
-    if (!Texture_LoadFromFile(gDotTexture, "dot.bmp")) {
-        printf("Unable to render dot texture!\n");
+    //Open the font
+    gFont = TTF_OpenFont( "lazy.ttf", 28 );
+    if( gFont == NULL )
+    {
+        printf( "Failed to load lazy font! SDL_ttf Error: %s\n", TTF_GetError() );
         success = FALSE;
     }
-    
-    // Load the BG texture
-    gBGTexture = Texture_New(gRenderer);
-    if (!Texture_LoadFromFile(gBGTexture, "bg.png")) {
-        printf("Unable to render BG texture!\n");
-        success = FALSE;
+    else
+    {
+        //Render the prompt
+        SDL_Color textColor = { 0, 0, 0, 0xFF };
+        gPromptTextTexture = Texture_New(gRenderer);
+        if( !Texture_LoadFromRenderedText(gPromptTextTexture, gFont, "Enter Text:", textColor)) {
+            printf( "Failed to render prompt text!\n" );
+            success = FALSE;
+        }
     }
+    
+
     
     return success;
 }
@@ -116,10 +129,12 @@ boolean LoadMedia() {
 
 void CloseSDL() {
     
-    // Free loaded images
-    Texture_Destroy(gDotTexture);
-    gDotTexture = NULL;
-    
+    // Destroy Renderer
+    Texture_Destroy(gPromptTextTexture);
+    Texture_Destroy(gInputTextTexture);
+    gPromptTextTexture = NULL;
+    gInputTextTexture = NULL;
+
     // Destroy window
     SDL_DestroyRenderer(gRenderer);
     SDL_DestroyWindow(gWindow);
@@ -149,15 +164,25 @@ int main(int argc, char* argv[]) {
             // Event handler
             SDL_Event event;
             
-            // The dot that will be moving around on the screen
-            Dot dot;
-            Dot_Init(&dot, DOT_WIDTH/2, DOT_HEIGHT/2);
+            // Text color
+            SDL_Color text_color = {0, 0, 0, 0xFF};
+            
+            // The current input string
+            size_t buffer_size = 64;
+            char input_text[buffer_size];
+            strcpy(input_text, "Some Text");
 
-            // The background scrolling offset
-            int scrolling_offset = 0;
+
+            gInputTextTexture = Texture_New(gRenderer);
+            Texture_LoadFromRenderedText(gInputTextTexture, gFont, input_text, text_color);
+            
+            // Enable text input
+            SDL_StartTextInput();
             
             // Application loop
             while (!quit) {
+                
+                boolean render_text = FALSE;
                 
                 // Handle event in queue
                 while (SDL_PollEvent(&event) != 0) {
@@ -165,37 +190,70 @@ int main(int argc, char* argv[]) {
                         // User requests quit
                         quit = TRUE;
                         
+                    } else if (event.type == SDL_KEYDOWN) {
+                        if (event.key.keysym.sym == SDLK_BACKSPACE && strlen(input_text) > 0) {
+                            // Handle backspace
+                            input_text[strlen(input_text) - 1] = '\0';
+                            render_text = TRUE;
+                        } else if (event.key.keysym.sym == SDLK_c && SDL_GetModState() & KMOD_CTRL) {
+                            // Handle Copy
+                            SDL_SetClipboardText(input_text);
+                        } else if (event.key.keysym.sym == SDLK_v && SDL_GetModState() & KMOD_CTRL) {
+                            // Handle Paste
+                            strcpy(input_text, SDL_GetClipboardText());
+                            render_text = TRUE;
+                        }
+                        
+                    } else if (event.type == SDL_TEXTINPUT) {
+                        // Not copying or pasting
+                        if (!(SDL_GetModState() & KMOD_CTRL && (event.text.text[0] == 'c' || event.text.text[0] == 'C' || event.text.text[0] == 'v' || event.text.text[0] == 'V'))) {
+                            if (strlen(input_text) < buffer_size) {
+                                // Append Character
+                                strcat(input_text, event.text.text);
+                                render_text = TRUE;
+                            } else {
+                                printf("Text Buffer is full!\n");
+                            }
+                        }
+                    }
+                 
+                    //printf("%s", strcmp(input_text, "") ? "true" : "false");
+                    // Rerender text if needed
+                    if (render_text) {
+                    
+                        // Text is not empty
+                        if (strcmp(input_text, "")) {
+                            // Render new text
+                            if( !Texture_LoadFromRenderedText(gInputTextTexture, gFont, input_text, text_color)) {
+                                printf( "Failed to render input text!\n" );
+                            }
+                        } else {
+                            // Render space texture
+                            if( !Texture_LoadFromRenderedText(gInputTextTexture, gFont, " ", text_color)) {
+                                printf( "Failed to render empty text!\n" );
+                            }
+                        }
                     }
                     
-                    // Handle input for the dot
-                    Dot_HandleEvent(&dot, &event);
                 }
                 
-                // Move the dot
-                Dot_Move(&dot);
-                
-                // Scroll background
-                --scrolling_offset;
-                if (scrolling_offset < -Texture_GetWidth(gBGTexture)) {
-                    scrolling_offset = 0;
-                }
-                
+        
                 
                 // Clear the screen
                 SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
                 SDL_RenderClear(gRenderer);
                 
-                // Render background
-                Texture_Render(gBGTexture, scrolling_offset, 0, NULL, 0.0, NULL, SDL_FLIP_NONE);
-                Texture_Render(gBGTexture, scrolling_offset + Texture_GetWidth(gBGTexture), 0, NULL, 0.0, NULL, SDL_FLIP_NONE);
-
-                
-                // Render dot
-                Dot_Render(&dot, gDotTexture);
+                // Render text textures
+                Texture_Render(gPromptTextTexture, (SCREEN_WIDTH - Texture_GetWidth(gPromptTextTexture)) / 2, 0, NULL, 0.0, NULL, SDL_FLIP_NONE);
+                Texture_Render(gInputTextTexture, (SCREEN_WIDTH - Texture_GetWidth(gInputTextTexture)) / 2, Texture_GetHeight(gPromptTextTexture), NULL, 0.0, NULL, SDL_FLIP_NONE);
                 
                 // Update the surface
                 SDL_RenderPresent(gRenderer);
+                
             }
+            
+            // Disable Text Input
+            SDL_StopTextInput();
         }
     }
     
